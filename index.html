@@ -1,47 +1,219 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Welder RM Tool</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welder RM Tool</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #0b0f14;
+  color: #eaeaea;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+/* LOGO */
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.logo svg {
+  width: 160px;
+}
+
+/* TITLE */
+h1 {
+  text-align: center;
+  margin: 10px 0 20px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+/* CARD */
+.card {
+  background: #121821;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 0 30px rgba(0,150,255,0.08);
+}
+
+/* BUTTONS */
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.2s;
+}
+
+.long { background: #0fbf7a; }
+.short { background: #e74c3c; }
+
+button.active {
+  box-shadow: 0 0 12px rgba(255,255,255,0.4);
+}
+
+/* INPUTS */
+label {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+input {
+  width: 100%;
+  margin: 6px 0 14px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #1b2330;
+  color: #fff;
+  font-size: 14px;
+}
+
+/* CALC BUTTON */
+.calc {
+  width: 100%;
+  background: linear-gradient(90deg,#00c6ff,#ff8c00);
+  margin-top: 10px;
+}
+
+/* RESULT */
+.result {
+  margin-top: 16px;
+  background: #0f1622;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  animation: fade 0.4s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
 
 <body>
+<div class="container">
 
-  <!-- LOGO -->
-  <div class="logo">
-    <img src="logo.svg" alt="Welder RM Tool">
-    <h1>Welder RM Tool</h1>
-  </div>
+<!-- LOGO SVG -->
+<div class="logo">
+<svg viewBox="0 0 220 220">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00c6ff"/>
+      <stop offset="100%" stop-color="#ff8c00"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
 
-  <!-- CALCULATOR -->
-  <div class="calculator">
+  <rect x="10" y="10" width="200" height="200" rx="28"
+        fill="none" stroke="url(#g1)" stroke-width="4"/>
 
-    <div class="side-buttons">
-      <button class="active" onclick="setSide('long')">LONG</button>
-      <button onclick="setSide('short')">SHORT</button>
-    </div>
+  <path d="M35 145 L70 120 L100 135 L135 100 L170 85"
+        fill="none" stroke="url(#g1)" stroke-width="4"
+        stroke-linecap="round" filter="url(#glow)">
+    <animate attributeName="stroke-dasharray"
+             from="0,300" to="300,0" dur="2s" fill="freeze"/>
+  </path>
 
-    <label>Депозит ($)</label>
-    <input id="deposit" type="number" placeholder="1000">
+  <circle cx="170" cy="85" r="6" fill="#ff8c00">
+    <animate attributeName="r" values="5;8;5" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
 
-    <label>Сумма в сделку ($)</label>
-    <input id="entryAmount" type="number" placeholder="500">
+  <text x="110" y="175" text-anchor="middle"
+        font-size="42" fill="#fff">RM</text>
+</svg>
+</div>
 
-    <label>Плечо (x)</label>
-    <input id="leverage" type="number" value="1" min="1" step="0.1">
-    <div class="hint">Сумма автоматически делится на плечо</div>
+<h1>Welder RM Tool</h1>
 
-    <label>Цена входа</label>
-    <input id="entryPrice" type="number" placeholder="25000">
+<div class="card">
 
-    <button class="calc-btn" onclick="calculate()">Рассчитать</button>
+<div class="buttons">
+  <button class="long active" onclick="setSide('long')">LONG</button>
+  <button class="short" onclick="setSide('short')">SHORT</button>
+</div>
 
-    <div id="result" class="result"></div>
+<label>Депозит ($)</label>
+<input id="deposit" type="number" value="1000">
 
-  </div>
+<label>Сумма в сделку ($)</label>
+<input id="trade" type="number" value="500">
 
-  <script src="script.js"></script>
+<label>Цена входа</label>
+<input id="entry" type="number" value="100">
+
+<label>Плечо</label>
+<input id="leverage" type="number" value="1">
+
+<button class="calc" onclick="calc()">Рассчитать</button>
+
+<div id="result" class="result" style="display:none;"></div>
+
+</div>
+</div>
+
+<script>
+let side = 'long';
+
+function setSide(s) {
+  side = s;
+  document.querySelector('.long').classList.toggle('active', s==='long');
+  document.querySelector('.short').classList.toggle('active', s==='short');
+}
+
+function calc() {
+  const deposit = +depositEl.value;
+  const trade = +tradeEl.value;
+  const entry = +entryEl.value;
+  const lev = +leverage.value || 1;
+
+  let slPercent = (trade / deposit) * 0.8;
+  if (slPercent < 0.8) slPercent = 0.8;
+
+  const slPrice = side === 'long'
+    ? entry * (1 - slPercent / 100)
+    : entry * (1 + slPercent / 100);
+
+  const tradeWithLev = trade * lev;
+
+  result.innerHTML = `
+  <b>Результат:</b><br>
+  Стоп-лосс: <b>${slPercent.toFixed(2)}%</b><br>
+  Цена SL: <b>${slPrice.toFixed(2)}</b><br>
+  Сумма в сделке с плечом: <b>$${tradeWithLev.toFixed(2)}</b>
+  `;
+  result.style.display = 'block';
+}
+
+const depositEl = document.getElementById('deposit');
+const result = document.getElementById('result');
+</script>
+
 </body>
 </html>
