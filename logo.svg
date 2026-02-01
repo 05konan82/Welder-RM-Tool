@@ -1,46 +1,77 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512"
+     xmlns="http://www.w3.org/2000/svg">
+
   <defs>
+    <!-- Gradient -->
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1e90ff"/>
       <stop offset="100%" stop-color="#ff8c00"/>
     </linearGradient>
+
+    <!-- Glow -->
     <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
       <feMerge>
-        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
 
-  <!-- background -->
+  <!-- Background -->
   <rect width="512" height="512" rx="110" fill="#020617"/>
 
-  <!-- outer ring -->
-  <circle cx="256" cy="256" r="170"
-          stroke="url(#grad)"
-          stroke-width="16"
-          fill="none"
-          filter="url(#glow)"/>
+  <!-- Frame -->
+  <rect x="80" y="80" width="352" height="352" rx="60"
+        fill="none"
+        stroke="url(#grad)"
+        stroke-width="14"
+        filter="url(#glow)"/>
 
-  <!-- welding sparks -->
-  <path d="M190 290 L256 200 L322 290"
-        stroke="#1e90ff"
-        stroke-width="16"
-        fill="none"/>
+  <!-- Chart line -->
+  <path id="chart"
+        d="M120 330
+           L180 260
+           L230 290
+           L290 210
+           L340 240
+           L380 180"
+        fill="none"
+        stroke="url(#grad)"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        filter="url(#glow)"
+        stroke-dasharray="600"
+        stroke-dashoffset="600">
+    <animate
+      attributeName="stroke-dashoffset"
+      from="600"
+      to="0"
+      dur="1.8s"
+      fill="freeze"
+      begin="0s"/>
+  </path>
 
-  <path d="M190 230 L256 320 L322 230"
-        stroke="#ff8c00"
-        stroke-width="16"
-        fill="none"/>
+  <!-- Price dot -->
+  <circle cx="380" cy="180" r="8" fill="#ff8c00">
+    <animate
+      attributeName="opacity"
+      from="0"
+      to="1"
+      dur="0.3s"
+      begin="1.6s"
+      fill="freeze"/>
+  </circle>
 
-  <!-- text -->
-  <text x="256" y="395"
+  <!-- RM text -->
+  <text x="256" y="420"
         text-anchor="middle"
-        font-size="44"
+        font-size="42"
         font-weight="800"
         fill="#e5e7eb"
-        letter-spacing="2">
+        letter-spacing="3">
     RM
   </text>
+
 </svg>
