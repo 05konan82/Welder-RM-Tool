@@ -1,158 +1,145 @@
 * {
   box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system;
+  font-family: Inter, Arial, sans-serif;
 }
 
 body {
   margin: 0;
-  background: #0b0f1a;
-  color: #e5e7eb;
-}
-
-.wrapper {
-  max-width: 380px;
-  margin: auto;
-  padding: 16px;
-}
-
-/* HEADER */
-.header {
-  text-align: center;
-  margin-bottom: 16px;
-  animation: fadeDown .6s ease;
-}
-
-.logo {
-  width: 120px;
-  margin: 0 auto 6px;
-  display: block;
-  filter:
-    drop-shadow(0 0 12px #1e90ff)
-    drop-shadow(0 0 18px #ff8c00);
-}
-
-.title {
-  font-size: 26px;
-  margin: 4px 0;
-  text-shadow:
-    0 0 10px #1e90ff,
-    0 0 18px #ff8c00;
-}
-
-.subtitle {
-  font-size: 13px;
-  opacity: .6;
-}
-
-/* CARD */
-.card {
   background: #020617;
-  border-radius: 16px;
-  padding: 18px;
-  border: 1px solid #1e293b;
-  animation: fadeUp .6s ease;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 10px;
 }
 
-/* FORM */
+/* LOGO */
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 0.8s ease;
+}
+
+.logo img {
+  width: 110px;
+  margin-bottom: 8px;
+}
+
+.logo h1 {
+  font-size: 22px;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #1e90ff, #ff8c00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* CALCULATOR */
+.calculator {
+  width: 100%;
+  max-width: 380px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(30,144,255,0.15);
+  animation: slideUp 0.6s ease;
+}
+
 label {
-  font-size: 12px;
-  opacity: .7;
-  margin-top: 12px;
-  display: block;
+  font-size: 13px;
+  opacity: 0.7;
 }
 
 input {
   width: 100%;
   padding: 10px;
-  margin-top: 4px;
+  margin: 6px 0 14px;
   background: #020617;
   border: 1px solid #1e293b;
-  border-radius: 8px;
-  color: #fff;
-  transition: border .25s, box-shadow .25s;
+  border-radius: 10px;
+  color: #e5e7eb;
+  outline: none;
+  transition: 0.2s;
 }
 
 input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37,99,235,.6);
+  border-color: #1e90ff;
+  box-shadow: 0 0 10px rgba(30,144,255,0.4);
 }
 
-/* BUTTONS */
-.row {
+/* SIDE BUTTONS */
+.side-buttons {
   display: flex;
-  gap: 8px;
-  margin-top: 6px;
+  margin-bottom: 15px;
 }
 
-.btn {
+.side-buttons button {
   flex: 1;
   padding: 10px;
-  background: transparent;
+  background: #020617;
   border: 1px solid #1e293b;
-  color: white;
-  border-radius: 10px;
+  color: #e5e7eb;
   cursor: pointer;
-  transition: all .25s;
+  transition: 0.2s;
 }
 
-.btn.active {
-  border-color: #2563eb;
-  box-shadow: 0 0 12px rgba(37,99,235,.6);
+.side-buttons button:first-child {
+  border-radius: 10px 0 0 10px;
 }
 
-.calc {
+.side-buttons button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.side-buttons .active {
+  background: #1e90ff;
+  border-color: #1e90ff;
+}
+
+/* BUTTON */
+.calc-btn {
   width: 100%;
-  margin-top: 16px;
   padding: 12px;
-  border-radius: 12px;
+  background: linear-gradient(90deg, #1e90ff, #ff8c00);
   border: none;
-  background: linear-gradient(90deg,#2563eb,#ff8c00);
-  color: white;
+  border-radius: 12px;
+  color: #020617;
   font-weight: 700;
   cursor: pointer;
-  transition: transform .15s, box-shadow .15s;
+  margin-top: 10px;
+  transition: 0.2s;
 }
 
-.calc:active {
-  transform: scale(.98);
-  box-shadow: 0 0 18px rgba(255,140,0,.6);
+.calc-btn:hover {
+  opacity: 0.9;
 }
 
 /* RESULT */
 .result {
   margin-top: 16px;
-  background: #e0f2fe;
-  color: #020617;
+  background: #020617;
+  border: 1px solid #1e293b;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px;
   font-size: 14px;
-  animation: tvPop .35s ease;
+  line-height: 1.6;
+  animation: fadeIn 0.4s ease;
 }
 
-.hidden {
-  display: none;
-}
-
-/* HINT */
 .hint {
   font-size: 11px;
-  opacity: .5;
-  margin-top: 4px;
+  opacity: 0.5;
+  margin-top: -10px;
+  margin-bottom: 10px;
 }
 
-/* ANIMATIONS (TradingView-like) */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes tvPop {
-  0% { opacity: 0; transform: scale(.97); }
-  100% { opacity: 1; transform: scale(1); }
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0 }
+  to { transform: translateY(0); opacity: 1 }
 }
