@@ -13,7 +13,7 @@ body {
   color: #eaeaea;
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 12px 0;
 }
 
 .container {
@@ -62,11 +62,11 @@ button.active {
 /* INPUTS */
 label {
   font-size: 13px;
-  margin-top: 10px;
+  margin-top: 12px;
   display: block;
 }
 
-input {
+input[type="number"] {
   width: 100%;
   margin-top: 6px;
   padding: 10px;
@@ -77,10 +77,23 @@ input {
   font-size: 14px;
 }
 
+/* RANGE */
+.range-wrap {
+  margin-top: 12px;
+}
+
+.range-wrap span {
+  font-size: 13px;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
 /* CALC */
 .calc-btn {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 18px;
   padding: 12px;
   border-radius: 12px;
   background: linear-gradient(90deg,#00c6ff,#ff8c00);
@@ -134,6 +147,22 @@ input {
   <label>Цена входа</label>
   <input id="entry" type="number" placeholder="100">
 
+  <!-- MULTI TP -->
+  <div class="range-wrap">
+    <span>TP1: <b id="tp1p">30</b>%</span>
+    <input type="range" id="tp1" min="0" max="100" value="30">
+  </div>
+
+  <div class="range-wrap">
+    <span>TP2: <b id="tp2p">40</b>%</span>
+    <input type="range" id="tp2" min="0" max="100" value="40">
+  </div>
+
+  <div class="range-wrap">
+    <span>TP3: <b id="tp3p">30</b>%</span>
+    <input type="range" id="tp3" min="0" max="100" value="30">
+  </div>
+
   <button class="calc-btn" onclick="doCalc()">Рассчитать</button>
 
   <div id="result" class="result"></div>
@@ -142,63 +171,73 @@ input {
 </div>
 
 <script>
-let currentSide = 'long';
+let side = 'long';
 
 btnLong.onclick = () => {
-  currentSide = 'long';
+  side = 'long';
   btnLong.classList.add('active');
   btnShort.classList.remove('active');
 };
 
 btnShort.onclick = () => {
-  currentSide = 'short';
+  side = 'short';
   btnShort.classList.add('active');
   btnLong.classList.remove('active');
 };
 
+// MULTI TP AUTO BALANCE
+const sliders = [tp1, tp2, tp3];
+sliders.forEach(sl => {
+  sl.oninput = () => {
+    let total = tp1.valueAsNumber + tp2.valueAsNumber + tp3.valueAsNumber;
+    if (total !== 100) {
+      tp3.value = Math.max(0, 100 - tp1.valueAsNumber - tp2.valueAsNumber);
+    }
+    updateLabels();
+  };
+});
+
+function updateLabels() {
+  tp1p.textContent = tp1.value;
+  tp2p.textContent = tp2.value;
+  tp3p.textContent = tp3.value;
+}
+updateLabels();
+
 function doCalc() {
   const deposit = +depositInput.value;
   const trade = +tradeInput.value;
-  const leverage = +leverageInput.value;
+  const leverage = +leverageInput.value || 1;
   const entry = +entryInput.value;
 
   if (!deposit || !trade || !entry) {
-    result.innerText = 'Заполни все поля';
     result.style.display = 'block';
+    result.innerText = 'Заполни все поля';
     return;
   }
 
-  const realTrade = trade / (leverage || 1);
-  const riskUsd = deposit * 0.008; // 0.8%
-  const stopPercent = (riskUsd / realTrade) * 100;
+  const realTrade = trade / leverage;
+  const riskUsd = deposit * 0.008;
+  const R = (riskUsd / realTrade) * 100;
 
-  const sl = currentSide === 'long'
-    ? entry * (1 - stopPercent / 100)
-    : entry * (1 + stopPercent / 100);
+  const sl = side === 'long'
+    ? entry * (1 - R / 100)
+    : entry * (1 + R / 100);
 
-  const R = stopPercent;
-
-  const tp1 = currentSide === 'long'
-    ? entry * (1 + R / 100)
-    : entry * (1 - R / 100);
-
-  const tp2 = currentSide === 'long'
-    ? entry * (1 + (R * 2) / 100)
-    : entry * (1 - (R * 2) / 100);
-
-  const tp3 = currentSide === 'long'
-    ? entry * (1 + (R * 3) / 100)
-    : entry * (1 - (R * 3) / 100);
+  const tp = (mult) =>
+    side === 'long'
+      ? entry * (1 + (R * mult) / 100)
+      : entry * (1 - (R * mult) / 100);
 
   result.style.display = 'block';
   result.innerHTML = `
-    <b>Сторона:</b> ${currentSide.toUpperCase()}<br>
-    <b>Риск:</b> $${riskUsd.toFixed(2)} (0.8%)<br>
+    <b>Сторона:</b> ${side.toUpperCase()}<br>
+    <b>Риск:</b> $${riskUsd.toFixed(2)}<br>
     <b>SL:</b> ${sl.toFixed(2)}<br>
 
-    <div class="tp"><b>TP1 (30%)</b> → ${tp1.toFixed(2)}</div>
-    <div class="tp"><b>TP2 (40%)</b> → ${tp2.toFixed(2)}</div>
-    <div class="tp"><b>TP3 (30%)</b> → ${tp3.toFixed(2)}</div>
+    <div class="tp">TP1 (${tp1.value}%): ${tp(1).toFixed(2)}</div>
+    <div class="tp">TP2 (${tp2.value}%): ${tp(2).toFixed(2)}</div>
+    <div class="tp">TP3 (${tp3.value}%): ${tp(3).toFixed(2)}</div>
   `;
 }
 
