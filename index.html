@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welder RM Tool</title>
+
 <style>
 body {
   margin: 0;
@@ -13,19 +14,30 @@ body {
   display: flex;
   justify-content: center;
 }
+
 .container {
   width: 100%;
   max-width: 420px;
   padding: 20px;
 }
+
 /* LOGO */
 .logo {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
 }
-.logo svg { width: 140px; }
-h1 { text-align: center; margin: 8px 0 16px; font-size: 22px; }
+
+.logo svg {
+  width: 140px;
+}
+
+h1 {
+  text-align: center;
+  margin: 8px 0 18px;
+  font-size: 22px;
+}
+
 /* CARD */
 .card {
   background: #121821;
@@ -33,11 +45,14 @@ h1 { text-align: center; margin: 8px 0 16px; font-size: 22px; }
   padding: 16px;
   box-shadow: 0 0 30px rgba(0,150,255,0.08);
 }
+
+/* BUTTONS */
 .buttons {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
 }
+
 button {
   flex: 1;
   padding: 12px;
@@ -48,10 +63,20 @@ button {
   color: #fff;
   transition: .2s;
 }
+
 .longBtn { background: #0fbf7a; }
 .shortBtn { background: #e74c3c; }
-button.active { box-shadow: 0 0 12px rgba(255,255,255,0.4); }
-label { font-size: 13px; opacity: .8; }
+
+button.active {
+  box-shadow: 0 0 12px rgba(255,255,255,0.4);
+}
+
+/* INPUTS */
+label {
+  font-size: 13px;
+  opacity: .8;
+}
+
 input {
   width: 100%;
   margin: 6px 0 14px;
@@ -62,11 +87,22 @@ input {
   color: #fff;
   font-size: 14px;
 }
+
+.hint {
+  font-size: 11px;
+  opacity: .5;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+/* CALC BUTTON */
 .calc {
   width: 100%;
   background: linear-gradient(90deg,#00c6ff,#ff8c00);
   margin-top: 10px;
 }
+
+/* RESULT */
 .result {
   margin-top: 16px;
   background: #0f1622;
@@ -74,13 +110,16 @@ input {
   padding: 12px;
   font-size: 14px;
   line-height: 1.6;
+  animation: fade .3s ease;
 }
-.hint {
-  font-size: 11px;
-  opacity: .5;
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
+
 <body>
 <div class="container">
 
@@ -94,24 +133,30 @@ input {
     </linearGradient>
     <filter id="glow"><feGaussianBlur stdDeviation="4"/></filter>
   </defs>
+
   <rect x="10" y="10" width="200" height="200" rx="28"
         fill="none" stroke="url(#g1)" stroke-width="4"/>
+
   <path d="M35 145 L70 120 L100 135 L135 100 L170 85"
         fill="none" stroke="url(#g1)" stroke-width="4"
         stroke-linecap="round" filter="url(#glow)">
     <animate attributeName="stroke-dasharray"
              from="0,300" to="300,0" dur="2s" fill="freeze"/>
   </path>
+
   <circle cx="170" cy="85" r="6" fill="#ff8c00">
     <animate attributeName="r" values="5;8;5" dur="1.2s" repeatCount="indefinite"/>
   </circle>
+
   <text x="110" y="175" text-anchor="middle"
         font-size="42" fill="#fff">RM</text>
 </svg>
 </div>
+
 <h1>Welder RM Tool</h1>
 
 <div class="card">
+
 <div class="buttons">
   <button id="btnLong" class="longBtn active">LONG</button>
   <button id="btnShort" class="shortBtn">SHORT</button>
@@ -124,76 +169,4 @@ input {
 <input id="trade" type="number" value="500">
 
 <label>Плечо</label>
-<input id="leverage" type="number" value="1">
-
-<div class="hint">Сумма автоматически делится на плечо</div>
-
-<label>Цена входа</label>
-<input id="entry" type="number" value="100">
-
-<button class="calc" onclick="calculate()">Рассчитать</button>
-
-<div id="result" class="result" style="display:none;"></div>
-</div>
-</div>
-
-<script>
-let currentSide = 'long';
-
-// кнопки переключения
-const btnLong = document.getElementById('btnLong');
-const btnShort = document.getElementById('btnShort');
-
-btnLong.addEventListener('click', () => {
-  currentSide = 'long';
-  btnLong.classList.add('active');
-  btnShort.classList.remove('active');
-});
-
-btnShort.addEventListener('click', () => {
-  currentSide = 'short';
-  btnShort.classList.add('active');
-  btnLong.classList.remove('active');
-});
-
-function calculate() {
-  const deposit = Number(document.getElementById('deposit').value);
-  const tradeAmount = Number(document.getElementById('trade').value);
-  const leverage = Number(document.getElementById('leverage').value) || 1;
-  const entryPrice = Number(document.getElementById('entry').value);
-
-  if (!deposit || !tradeAmount || !entryPrice) {
-    return;
-  }
-
-  // реальная сумма с плечом
-  const realDeal = tradeAmount / leverage;
-
-  // риск 0.8% от депозита
-  const riskUsd = deposit * 0.008;
-
-  // стоп в %
-  const stopPercent = (riskUsd / realDeal) * 100;
-
-  // цена SL
-  let stopPrice;
-  if (currentSide === 'long') {
-    stopPrice = entryPrice * (1 - stopPercent / 100);
-  } else {
-    stopPrice = entryPrice * (1 + stopPercent / 100);
-  }
-
-  const resultBlock = document.getElementById('result');
-  resultBlock.style.display = 'block';
-  resultBlock.innerHTML = `
-    <b>Сторона:</b> ${currentSide.toUpperCase()}<br>
-    <b>Фактическая сумма в сделке:</b> ${realDeal.toFixed(2)} $<br>
-    <b>Риск (0.8%):</b> ${riskUsd.toFixed(2)} $<br>
-    <b>Стоп-лосс:</b> ${stopPercent.toFixed(2)} %<br>
-    <b>Цена стопа:</b> ${stopPrice.toFixed(2)}
-  `;
-}
-</script>
-
-</body>
-</html>
+<input id="leverage" type
