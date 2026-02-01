@@ -6,24 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="wrapper">
-
-  <!-- HEADER -->
-  <div class="header">
-    <img src="logo.svg" class="logo">
-    <h1 class="title">🔥 Welder RM Tool</h1>
-    <p class="subtitle">Risk Management Calculator</p>
+  <!-- LOGO -->
+  <div class="logo">
+    <img src="logo.svg" alt="Welder RM Tool">
+    <h1>Welder RM Tool</h1>
   </div>
 
-  <!-- CARD -->
-  <div class="card">
+  <!-- CALCULATOR -->
+  <div class="calculator">
 
-    <label>Направление</label>
-    <div class="row">
-      <button id="longBtn" class="btn active" onclick="setSide('long')">🟢 Лонг</button>
-      <button id="shortBtn" class="btn" onclick="setSide('short')">🔴 Шорт</button>
+    <div class="side-buttons">
+      <button class="active" onclick="setSide('long')">LONG</button>
+      <button onclick="setSide('short')">SHORT</button>
     </div>
 
     <label>Депозит ($)</label>
@@ -37,15 +34,14 @@
     <div class="hint">Сумма автоматически делится на плечо</div>
 
     <label>Цена входа</label>
-    <input id="entryPrice" type="number" placeholder="100">
+    <input id="entryPrice" type="number" placeholder="25000">
 
-    <button class="calc" onclick="calculate()">Рассчитать</button>
+    <button class="calc-btn" onclick="calculate()">Рассчитать</button>
 
-    <div id="result" class="result hidden"></div>
+    <div id="result" class="result"></div>
 
   </div>
-</div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
