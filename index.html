@@ -87,6 +87,7 @@ input[type="range"] { width: 100%; }
   color: #020617;
 }
 
+/* RESULT */
 .result {
   margin-top: 18px;
   background: #0f172a;
@@ -106,31 +107,48 @@ input[type="range"] { width: 100%; }
   color: #020617;
   font-weight: 700;
   text-align: center;
-  animation: glow 2.5s infinite ease-in-out;
 }
 
-.tp {
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 8px;
+/* GRAPH */
+.chart {
+  margin-top: 16px;
+  height: 220px;
   background: #020617;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
   border: 1px solid #1e293b;
 }
 
-.be {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  background: #022c22;
-  color: #34d399;
-  font-weight: 700;
-  box-shadow: 0 0 18px rgba(52,211,153,0.35);
+.line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  opacity: 0;
+  animation: slide 0.8s forwards;
 }
 
-@keyframes glow {
-  0% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
-  50% { box-shadow: 0 0 22px rgba(249,115,22,0.6); }
-  100% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
+.entry { background: #0ea5e9; }
+.sl { background: #ef4444; }
+.tp { background: #22c55e; }
+.be { background: #facc15; border-top: 2px dashed #facc15; }
+
+.label {
+  position: absolute;
+  right: 8px;
+  font-size: 12px;
+  opacity: 0;
+  animation: fade 1s forwards;
+}
+
+@keyframes slide {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade {
+  to { opacity: 1; }
 }
 </style>
 </head>
@@ -158,24 +176,11 @@ input[type="range"] { width: 100%; }
 <label>Цена входа</label>
 <input id="entry" type="number" value="100">
 
-<div class="range">
-  <span>TP1: <b id="tp1p">30</b>%</span>
-  <input type="range" id="tp1" value="30">
-</div>
-
-<div class="range">
-  <span>TP2: <b id="tp2p">40</b>%</span>
-  <input type="range" id="tp2" value="40">
-</div>
-
-<div class="range">
-  <span>TP3: <b id="tp3p">30</b>%</span>
-  <input type="range" id="tp3" value="30">
-</div>
-
 <button class="calc-btn" onclick="calculate()">Рассчитать</button>
 
 <div id="result" class="result"></div>
+
+<div id="chart" class="chart"></div>
 
 </div>
 </div>
@@ -185,16 +190,6 @@ let side='long';
 
 btnLong.onclick=()=>{side='long';btnLong.classList.add('active');btnShort.classList.remove('active')}
 btnShort.onclick=()=>{side='short';btnShort.classList.add('active');btnLong.classList.remove('active')}
-
-[tp1,tp2,tp3].forEach(sl=>{
-  sl.oninput=()=>{
-    let sum=+tp1.value+ +tp2.value+ +tp3.value;
-    if(sum!==100) tp3.value=Math.max(0,100-tp1.value-tp2.value);
-    tp1p.textContent=tp1.value;
-    tp2p.textContent=tp2.value;
-    tp3p.textContent=tp3.value;
-  }
-});
 
 function calculate(){
   const deposit=+depositInput.value;
@@ -207,35 +202,27 @@ function calculate(){
   const slPercent=(riskUsd/realTrade)*100;
 
   const sl=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
-  const tp=r=>side==='long'?entry+(entry-sl)*r:entry-(sl-entry)*r;
-
+  const tp1=side==='long'?entry+(entry-sl):entry-(sl-entry);
+  const tp2=side==='long'?entry+(entry-sl)*2:entry-(sl-entry)*2;
+  const tp3=side==='long'?entry+(entry-sl)*3:entry-(sl-entry)*3;
   const be=entry;
 
   result.style.display='block';
   result.innerHTML=`
     <b>Сторона:</b> ${side.toUpperCase()}<br>
-    <b>Риск:</b> $${riskUsd.toFixed(2)} (0.8%)<br>
-
+    <b>Риск:</b> $${riskUsd.toFixed(2)}<br>
     <div class="real-trade">Фактическая сумма: $${realTrade.toFixed(2)}</div>
-
-    <b>Начальный SL:</b> ${sl.toFixed(2)}<br>
-
-    <div class="tp">TP1 → ${tp(1).toFixed(2)} | +$${(riskUsd*tp1.value/100).toFixed(2)}</div>
-    <div class="tp">TP2 → ${tp(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
-    <div class="tp">TP3 → ${tp(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
-
-    <div class="be">
-      После TP1 → SL переносится в BE<br>
-      Новый SL: ${be.toFixed(2)} (риск 0)
-    </div>
   `;
+
+  drawChart(entry, sl, tp1, tp2, tp3, be);
 }
 
-const depositInput=document.getElementById('deposit');
-const tradeInput=document.getElementById('trade');
-const leverageInput=document.getElementById('leverage');
-const entryInput=document.getElementById('entry');
-const result=document.getElementById('result');
-</script>
-</body>
-</html>
+function drawChart(entry, sl, tp1, tp2, tp3, be){
+  chart.innerHTML='';
+  const prices=[sl,entry,be,tp1,tp2,tp3];
+  const min=Math.min(...prices);
+  const max=Math.max(...prices);
+
+  const pos=p=>((max-p)/(max-min))*100;
+
+  addLine('sl',sl,'SL');
