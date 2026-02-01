@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Welder RM Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="logo.svg" class="logo">
+    <h1 class="title">🔥 Welder RM Tool</h1>
+    <p class="subtitle">Risk Management Calculator</p>
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+
+    <label>Направление</label>
+    <div class="row">
+      <button id="longBtn" class="btn active" onclick="setSide('long')">🟢 Лонг</button>
+      <button id="shortBtn" class="btn" onclick="setSide('short')">🔴 Шорт</button>
+    </div>
+
+    <label>Депозит ($)</label>
+    <input id="deposit" type="number" placeholder="1000">
+
+    <label>Сумма в сделку ($)</label>
+    <input id="entryAmount" type="number" placeholder="500">
+
+    <label>Плечо (x)</label>
+    <input id="leverage" type="number" value="1" min="1" step="0.1">
+    <div class="hint">Сумма автоматически делится на плечо</div>
+
+    <label>Цена входа</label>
+    <input id="entryPrice" type="number" placeholder="100">
+
+    <button class="calc" onclick="calculate()">Рассчитать</button>
+
+    <div id="result" class="result hidden"></div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
