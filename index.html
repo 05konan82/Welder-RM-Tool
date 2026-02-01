@@ -26,7 +26,6 @@ h1 {
   text-align: center;
   margin-bottom: 16px;
   font-size: 24px;
-  font-weight: 700;
 }
 
 .card {
@@ -55,10 +54,7 @@ button {
 
 .longBtn { background: #10b981; }
 .shortBtn { background: #ef4444; }
-
-button.active {
-  box-shadow: 0 0 14px rgba(255,255,255,0.35);
-}
+button.active { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
 
 /* INPUTS */
 label {
@@ -76,21 +72,14 @@ input[type="number"] {
   border: none;
   background: #1f2937;
   color: #fff;
-  font-size: 14px;
 }
 
 /* RANGE */
 .range {
   margin-top: 12px;
 }
-
-.range span {
-  font-size: 13px;
-}
-
-input[type="range"] {
-  width: 100%;
-}
+.range span { font-size: 13px; }
+input[type="range"] { width: 100%; }
 
 /* BUTTON */
 .calc-btn {
@@ -102,7 +91,6 @@ input[type="range"] {
   font-weight: 600;
   cursor: pointer;
   color: #020617;
-  font-size: 15px;
 }
 
 /* RESULT */
@@ -134,6 +122,15 @@ input[type="range"] {
   border-radius: 8px;
   background: #020617;
   border: 1px solid #1e293b;
+}
+
+.be {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #022c22;
+  color: #34d399;
+  font-weight: 600;
 }
 
 @keyframes glow {
@@ -168,23 +165,19 @@ input[type="range"] {
   <label>Цена входа</label>
   <input id="entry" type="number" value="100">
 
-  <label>Risk / Reward (RR)</label>
-  <input id="rr" type="number" value="3">
-
-  <!-- MULTI TP -->
   <div class="range">
     <span>TP1: <b id="tp1p">30</b>%</span>
-    <input type="range" id="tp1" min="0" max="100" value="30">
+    <input type="range" id="tp1" value="30">
   </div>
 
   <div class="range">
     <span>TP2: <b id="tp2p">40</b>%</span>
-    <input type="range" id="tp2" min="0" max="100" value="40">
+    <input type="range" id="tp2" value="40">
   </div>
 
   <div class="range">
     <span>TP3: <b id="tp3p">30</b>%</span>
-    <input type="range" id="tp3" min="0" max="100" value="30">
+    <input type="range" id="tp3" value="30">
   </div>
 
   <button class="calc-btn" onclick="calculate()">Рассчитать</button>
@@ -197,77 +190,60 @@ input[type="range"] {
 <script>
 let side = 'long';
 
-btnLong.onclick = () => {
-  side = 'long';
-  btnLong.classList.add('active');
-  btnShort.classList.remove('active');
-};
+btnLong.onclick = () => { side='long'; btnLong.classList.add('active'); btnShort.classList.remove('active'); }
+btnShort.onclick = () => { side='short'; btnShort.classList.add('active'); btnLong.classList.remove('active'); }
 
-btnShort.onclick = () => {
-  side = 'short';
-  btnShort.classList.add('active');
-  btnLong.classList.remove('active');
-};
-
-/* TP AUTO BALANCE */
-const sliders = [tp1, tp2, tp3];
-sliders.forEach(sl => {
-  sl.oninput = () => {
-    let sum = tp1.valueAsNumber + tp2.valueAsNumber + tp3.valueAsNumber;
-    if (sum !== 100) {
-      tp3.value = Math.max(0, 100 - tp1.valueAsNumber - tp2.valueAsNumber);
-    }
-    tp1p.textContent = tp1.value;
-    tp2p.textContent = tp2.value;
-    tp3p.textContent = tp3.value;
-  };
+const sliders = [tp1,tp2,tp3];
+sliders.forEach(sl=>{
+  sl.oninput=()=>{
+    let sum=tp1.valueAsNumber+tp2.valueAsNumber+tp3.valueAsNumber;
+    if(sum!==100) tp3.value=Math.max(0,100-tp1.valueAsNumber-tp2.valueAsNumber);
+    tp1p.textContent=tp1.value;
+    tp2p.textContent=tp2.value;
+    tp3p.textContent=tp3.value;
+  }
 });
 
-function calculate() {
-  const deposit = +depositInput.value;
-  const trade = +tradeInput.value;
-  const leverage = +leverageInput.value || 1;
-  const entry = +entryInput.value;
-  const rr = +rrInput.value;
+function calculate(){
+  const deposit=+depositInput.value;
+  const trade=+tradeInput.value;
+  const leverage=+leverageInput.value||1;
+  const entry=+entryInput.value;
 
-  const riskPercent = 0.8;
-  const riskUsd = deposit * riskPercent / 100;
-  const realTrade = trade / leverage;
-  const slPercent = (riskUsd / realTrade) * 100;
+  const riskUsd=deposit*0.008;
+  const realTrade=trade/leverage;
+  const slPercent=(riskUsd/realTrade)*100;
 
-  const slPrice = side === 'long'
-    ? entry * (1 - slPercent / 100)
-    : entry * (1 + slPercent / 100);
+  const slPrice=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
 
-  const tpPrice = m =>
-    side === 'long'
-      ? entry + (entry - slPrice) * m
-      : entry - (slPrice - entry) * m;
+  const tpPrice=r=>side==='long'
+    ? entry+(entry-slPrice)*r
+    : entry-(slPrice-entry)*r;
 
-  result.style.display = 'block';
-  result.innerHTML = `
+  const bePrice=entry;
+
+  result.style.display='block';
+  result.innerHTML=`
     <b>Сторона:</b> ${side.toUpperCase()}<br>
-    <b>Риск:</b> $${riskUsd.toFixed(2)} (${riskPercent}%)<br>
+    <b>Риск:</b> $${riskUsd.toFixed(2)} (0.8%)<br>
 
-    <div class="real-trade">
-      Фактическая сумма: $${realTrade.toFixed(2)}
-    </div>
+    <div class="real-trade">Фактическая сумма: $${realTrade.toFixed(2)}</div>
 
-    <b>Стоп-лосс:</b> ${slPercent.toFixed(2)}%<br>
     <b>Цена SL:</b> ${slPrice.toFixed(2)}<br>
 
-    <div class="tp">TP1 (${tp1.value}%): ${tpPrice(1).toFixed(2)} — $${(realTrade * tp1.value / 100).toFixed(2)}</div>
-    <div class="tp">TP2 (${tp2.value}%): ${tpPrice(2).toFixed(2)} — $${(realTrade * tp2.value / 100).toFixed(2)}</div>
-    <div class="tp">TP3 (${tp3.value}%): ${tpPrice(3).toFixed(2)} — $${(realTrade * tp3.value / 100).toFixed(2)}</div>
+    <div class="tp">TP1 → ${tpPrice(1).toFixed(2)} | +$${(riskUsd*1*tp1.value/100).toFixed(2)}</div>
+    <div class="tp">TP2 → ${tpPrice(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
+    <div class="tp">TP3 → ${tpPrice(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
+
+    <div class="be">Безубыток после TP1 → ${bePrice.toFixed(2)}</div>
   `;
 }
 
-const depositInput = document.getElementById('deposit');
-const tradeInput = document.getElementById('trade');
-const leverageInput = document.getElementById('leverage');
-const entryInput = document.getElementById('entry');
-const rrInput = document.getElementById('rr');
-const result = document.getElementById('result');
+const depositInput=document.getElementById('deposit');
+const tradeInput=document.getElementById('trade');
+const leverageInput=document.getElementById('leverage');
+const entryInput=document.getElementById('entry');
+const result=document.getElementById('result');
 </script>
 
 </body>
