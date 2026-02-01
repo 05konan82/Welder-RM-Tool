@@ -46,4 +46,39 @@
       <animate attributeName="height" values="40;60;45" dur="2s" repeatCount="indefinite"/>
     </rect>
     <rect x="100" y="100" width="10" height="70" fill="#ff8800">
-      <animate attributeName="height" values="50;70;55" dur="2s" repea
+      <animate attributeName="height" values="50;70;55" dur="2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Линия графика -->
+  <path d="M35 145 L70 120 L100 135 L135 100 L170 85"
+        fill="none"
+        stroke="url(#lineGradient)"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        filter="url(#glow)"
+        stroke-dasharray="300"
+        stroke-dashoffset="300">
+    <animate attributeName="stroke-dashoffset"
+             from="300"
+             to="0"
+             dur="2s"
+             fill="freeze"/>
+  </path>
+
+  <!-- Точка -->
+  <circle cx="170" cy="85" r="6" fill="#ff8c00" filter="url(#glow)">
+    <animate attributeName="r" values="5;8;5" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Текст RM -->
+  <text x="110" y="175"
+        text-anchor="middle"
+        font-size="42"
+        font-weight="700"
+        fill="white"
+        filter="url(#glow)">
+    RM
+  </text>
+</svg>
