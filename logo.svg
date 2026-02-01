@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e90ff"/>
+      <stop offset="100%" stop-color="#ff8c00"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="512" height="512" rx="110" fill="#020617"/>
+
+  <!-- outer ring -->
+  <circle cx="256" cy="256" r="170"
+          stroke="url(#grad)"
+          stroke-width="16"
+          fill="none"
+          filter="url(#glow)"/>
+
+  <!-- welding sparks -->
+  <path d="M190 290 L256 200 L322 290"
+        stroke="#1e90ff"
+        stroke-width="16"
+        fill="none"/>
+
+  <path d="M190 230 L256 320 L322 230"
+        stroke="#ff8c00"
+        stroke-width="16"
+        fill="none"/>
+
+  <!-- text -->
+  <text x="256" y="395"
+        text-anchor="middle"
+        font-size="44"
+        font-weight="800"
+        fill="#e5e7eb"
+        letter-spacing="2">
+    RM
+  </text>
+</svg>
