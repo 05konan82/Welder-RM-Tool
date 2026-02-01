@@ -3,208 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welder RM Tool — Mini-Graph</title>
+<title>Welder RM Tool</title>
+
 <style>
-body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background: #0b0f14;
-  color: #e5e7eb;
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
+body{
+  margin:0;
+  background:#0b0f14;
+  color:#e5e7eb;
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
 }
-.container {
-  width: 100%;
-  max-width: 440px;
-  padding: 0 12px;
+.wrapper{
+  width:100%;
+  max-width:420px;
+  padding:16px;
 }
-.card {
-  background: #111827;
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+.card{
+  background:#111827;
+  border-radius:14px;
+  padding:16px;
 }
-h1 {
-  text-align: center;
-  margin-bottom: 14px;
+label{
+  font-size:13px;
+  margin-top:10px;
+  display:block;
 }
-input[type="number"] {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #1f2937;
-  color: #fff;
-  font-size: 14px;
+input{
+  width:100%;
+  padding:10px;
+  margin-top:4px;
+  border:none;
+  border-radius:8px;
+  background:#1f2937;
+  color:#fff;
 }
-label {
-  font-size: 13px;
-  margin-top: 10px;
-  display: block;
+button{
+  width:100%;
+  margin-top:16px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(90deg,#0ea5e9,#f97316);
+  color:#020617;
+  font-weight:bold;
+  cursor:pointer;
 }
-button {
-  width: 100%;
-  margin-top: 18px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(90deg,#0ea5e9,#f97316);
-  color: #020617;
-  font-weight: 600;
-  cursor: pointer;
+.result{
+  margin-top:14px;
+  background:#020617;
+  padding:12px;
+  border-radius:10px;
+  display:none;
 }
-.result {
-  margin-top: 16px;
-  background: #0f172a;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 14px;
-  line-height: 1.5;
-  border: 1px solid #1e293b;
-  display: none;
+.chart{
+  margin-top:12px;
+  height:200px;
+  background:#020617;
+  border-radius:10px;
+  position:relative;
 }
-.chart {
-  margin-top: 12px;
-  height: 200px;
-  background: #020617;
-  border-radius: 10px;
-  border: 1px solid #1e293b;
-  position: relative;
+.line{
+  position:absolute;
+  left:0;
+  width:100%;
+  height:2px;
 }
-.line {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  opacity: 0;
-  animation: slide 0.7s forwards;
-}
-.entry { background: #0ea5e9; }
-.sl    { background: #ef4444; }
-.tp1   { background: #22c55e; }
-.tp2   { background: #22c55e; }
-.tp3   { background: #22c55e; }
-.be    { background: #facc15; border-top: 2px dashed #facc15; }
-.label {
-  position: absolute;
-  right: 8px;
-  font-size: 12px;
-  opacity: 0;
-  animation: fadein 0.6s forwards 0.7s;
-}
-@keyframes slide {
-  from { transform: translateX(-100%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
-}
-@keyframes fadein {
-  to { opacity: 1; }
+.sl{background:#ef4444;}
+.entry{background:#0ea5e9;}
+.tp{background:#22c55e;}
+.be{background:#facc15;border-top:2px dashed #facc15;}
+.label{
+  position:absolute;
+  right:6px;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>Welder RM Tool</h1>
+<div class="wrapper">
+<h2 style="text-align:center">Welder RM Tool</h2>
 
-  <div class="card">
+<div class="card">
+<label>Депозит ($)</label>
+<input id="deposit" value="1000">
 
-    <label>Депозит ($)</label>
-    <input id="deposit" type="number" value="1000">
+<label>Сумма в сделку ($)</label>
+<input id="trade" value="500">
 
-    <label>Сумма в сделку ($)</label>
-    <input id="trade" type="number" value="500">
+<label>Цена входа</label>
+<input id="entry" value="100">
 
-    <label>Плечо (x)</label>
-    <input id="leverage" type="number" value="1">
+<button onclick="calc()">Рассчитать</button>
 
-    <label>Цена входа</label>
-    <input id="entry" type="number" value="100">
-
-    <label>TP1 (%)</label>
-    <input id="tp1p" type="number" value="30">
-
-    <label>TP2 (%)</label>
-    <input id="tp2p" type="number" value="30">
-
-    <label>TP3 (%)</label>
-    <input id="tp3p" type="number" value="40">
-
-    <button onclick="calculate()">Рассчитать</button>
-
-    <div id="result" class="result"></div>
-    <div id="chart" class="chart"></div>
-
-  </div>
+<div id="res" class="result"></div>
+<div id="chart" class="chart"></div>
+</div>
 </div>
 
 <script>
-// эта функция получает цена и нормализует её в %
-function normY(price, min, max) {
-  return ((max - price) / (max - min)) * 100;
-}
+function calc(){
+  const deposit = Number(document.getElementById('deposit').value);
+  const trade   = Number(document.getElementById('trade').value);
+  const entry   = Number(document.getElementById('entry').value);
 
-function calculate() {
-  const dep = +document.getElementById('deposit').value;
-  const trade = +document.getElementById('trade').value;
-  const lev = +document.getElementById('leverage').value || 1;
-  const entry = +document.getElementById('entry').value;
-  const tp1p = +document.getElementById('tp1p').value;
-  const tp2p = +document.getElementById('tp2p').value;
-  const tp3p = +document.getElementById('tp3p').value;
-
-  const realTrade = trade / lev;
-  const riskUsd = dep * 0.008;
-  const stopPercent = (riskUsd / realTrade) * 100;
-  const slPrice = entry - (entry * stopPercent / 100);
-  const tp1Price = entry + (entry - slPrice) * (tp1p/100);
-  const tp2Price = entry + (entry - slPrice) * (tp2p/100);
-  const tp3Price = entry + (entry - slPrice) * (tp3p/100);
-  const bePrice = entry;
-
-  const prices = [slPrice, entry, tp1Price, tp2Price, tp3Price];
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-
-  // результат текстом
-  const res = document.getElementById('result');
-  res.style.display = 'block';
-  res.innerHTML = `
-    SL: ${slPrice.toFixed(2)}<br>
-    TP1: ${tp1Price.toFixed(2)}<br>
-    TP2: ${tp2Price.toFixed(2)}<br>
-    TP3: ${tp3Price.toFixed(2)}<br>
-    BE: ${bePrice.toFixed(2)}
-  `;
-
-  // чистим старые линии
-  const ch = document.getElementById('chart');
-  ch.innerHTML = '';
-
-  function drawLine(cls, price, label) {
-    const y = normY(price, min, max);
-    const line = document.createElement('div');
-    line.className = 'line ' + cls;
-    line.style.top = y + '%';
-
-    const lbl = document.createElement('div');
-    lbl.className = 'label';
-    lbl.style.top = (y-3) + '%';
-    lbl.textContent = `${label} ${price.toFixed(2)}`;
-
-    ch.appendChild(line);
-    ch.appendChild(lbl);
+  if(!deposit || !trade || !entry){
+    alert('Проверь поля');
+    return;
   }
 
-  drawLine('sl', slPrice, 'SL');
-  drawLine('entry', entry, 'Entry');
-  drawLine('tp1', tp1Price, 'TP1');
-  drawLine('tp2', tp2Price, 'TP2');
-  drawLine('tp3', tp3Price, 'TP3');
-  drawLine('be', bePrice, 'BE');
+  const risk = deposit * 0.008;
+  const sl   = entry - (risk / trade) * entry;
+  const tp1  = entry + (entry - sl);
+  const be   = entry;
+
+  const res = document.getElementById('res');
+  res.style.display='block';
+  res.innerHTML = `
+    Риск: $${risk.toFixed(2)}<br>
+    SL: ${sl.toFixed(2)}<br>
+    TP1: ${tp1.toFixed(2)}<br>
+    BE: ${be.toFixed(2)}
+  `;
+
+  const chart = document.getElementById('chart');
+  chart.innerHTML='';
+
+  const prices=[sl,entry,tp1];
+  const min=Math.min(...prices);
+  const max=Math.max(...prices);
+
+  function y(p){return ((max-p)/(max-min))*100;}
+
+  draw(sl,'sl','SL');
+  draw(entry,'entry','Entry');
+  draw(tp1,'tp','TP');
+  draw(be,'be','BE');
+
+  function draw(price,cls,text){
+    const line=document.createElement('div');
+    line.className='line '+cls;
+    line.style.top=y(price)+'%';
+
+    const lbl=document.createElement('div');
+    lbl.className='label';
+    lbl.style.top=(y(price)-3)+'%';
+    lbl.textContent=text+' '+price.toFixed(2);
+
+    chart.appendChild(line);
+    chart.appendChild(lbl);
+  }
 }
 </script>
-
 </body>
 </html>
