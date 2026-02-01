@@ -10,43 +10,32 @@ body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
   background: #0b0f14;
-  color: #eaeaea;
+  color: #e5e7eb;
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 16px 0;
 }
 
 .container {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   padding: 0 12px;
 }
 
-/* LOGO */
-.logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.logo svg { width: 140px; }
-
 h1 {
   text-align: center;
-  margin: 10px 0 16px;
+  margin-bottom: 16px;
   font-size: 24px;
-  letter-spacing: 1px;
 }
 
-/* CARD */
 .card {
-  background: #121821;
+  background: #111827;
   border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 0 30px rgba(0,150,255,0.08);
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
 }
 
-/* SIDE BUTTONS */
+/* SIDE */
 .side-buttons {
   display: flex;
   gap: 8px;
@@ -58,56 +47,47 @@ button {
   padding: 10px;
   border: none;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
   color: #fff;
-  transition: .2s;
 }
 
-.longBtn { background: #0fbf7a; }
-.shortBtn { background: #e74c3c; }
-button.active {
-  box-shadow: 0 0 12px rgba(255,255,255,0.4);
-}
+.longBtn { background: #10b981; }
+.shortBtn { background: #ef4444; }
+button.active { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
 
 /* INPUTS */
 label {
   font-size: 13px;
-  opacity: .85;
-  margin-top: 10px;
+  margin-top: 12px;
   display: block;
+  color: #9ca3af;
 }
 
-input {
+input[type="number"] {
   width: 100%;
   margin-top: 6px;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
-  background: #1b2330;
+  background: #1f2937;
   color: #fff;
-  font-size: 14px;
-  transition: .2s;
 }
 
-input:focus {
-  outline: none;
-  border: 1px solid #1e90ff;
-  box-shadow: 0 0 6px rgba(30,144,255,.3);
+/* RANGE */
+.range {
+  margin-top: 12px;
 }
+.range span { font-size: 13px; }
+input[type="range"] { width: 100%; }
 
-.hint {
-  font-size: 11px;
-  opacity: .5;
-}
-
-/* CALC */
+/* BUTTON */
 .calc-btn {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 18px;
   padding: 12px;
   border-radius: 12px;
-  background: linear-gradient(90deg,#00c6ff,#ff8c00);
+  background: linear-gradient(90deg,#0ea5e9,#f97316);
   font-weight: 600;
   cursor: pointer;
   color: #020617;
@@ -116,49 +96,53 @@ input:focus {
 /* RESULT */
 .result {
   margin-top: 18px;
-  background: #0f1622;
-  border-radius: 10px;
+  background: #0f172a;
+  border-radius: 12px;
   padding: 14px;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   border: 1px solid #1e293b;
   display: none;
+}
+
+.real-trade {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#0ea5e9,#f97316);
+  color: #020617;
+  font-weight: 700;
+  text-align: center;
+  animation: glow 2.5s infinite ease-in-out;
+}
+
+.tp {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+.be {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #022c22;
+  color: #34d399;
+  font-weight: 600;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
+  50% { box-shadow: 0 0 22px rgba(249,115,22,0.6); }
+  100% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-
-<!-- LOGO -->
-<div class="logo">
-<svg viewBox="0 0 220 220">
-  <defs>
-    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00c6ff"/>
-      <stop offset="100%" stop-color="#ff8c00"/>
-    </linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="4"/></filter>
-  </defs>
-
-  <rect x="10" y="10" width="200" height="200" rx="28"
-        fill="none" stroke="url(#g1)" stroke-width="4"/>
-
-  <path d="M35 145 L70 120 L100 135 L135 100 L170 85"
-        fill="none" stroke="url(#g1)" stroke-width="4"
-        stroke-linecap="round" filter="url(#glow)">
-    <animate attributeName="stroke-dasharray"
-             from="0,300" to="300,0" dur="2s" fill="freeze"/>
-  </path>
-
-  <circle cx="170" cy="85" r="6" fill="#ff8c00">
-    <animate attributeName="r" values="5;8;5" dur="1.2s" repeatCount="indefinite"/>
-  </circle>
-
-  <text x="110" y="175" text-anchor="middle"
-        font-size="42" fill="#fff">RM</text>
-</svg>
-</div>
 
 <h1>Welder RM Tool</h1>
 
@@ -170,93 +154,96 @@ input:focus {
   </div>
 
   <label>Депозит ($)</label>
-  <input id="deposit" type="number" placeholder="1000">
+  <input id="deposit" type="number" value="1000">
 
   <label>Сумма в сделку ($)</label>
-  <input id="trade" type="number" placeholder="500">
+  <input id="trade" type="number" value="500">
 
   <label>Плечо (x)</label>
   <input id="leverage" type="number" value="1">
 
-  <div class="hint">Сумма автоматически делится на плечо</div>
-
   <label>Цена входа</label>
-  <input id="entry" type="number" placeholder="100">
+  <input id="entry" type="number" value="100">
 
-  <label>Risk / Reward (RR)</label>
-  <input id="rr" type="number" step="0.1" value="2">
+  <div class="range">
+    <span>TP1: <b id="tp1p">30</b>%</span>
+    <input type="range" id="tp1" value="30">
+  </div>
 
-  <button class="calc-btn" onclick="doCalc()">Рассчитать</button>
+  <div class="range">
+    <span>TP2: <b id="tp2p">40</b>%</span>
+    <input type="range" id="tp2" value="40">
+  </div>
+
+  <div class="range">
+    <span>TP3: <b id="tp3p">30</b>%</span>
+    <input type="range" id="tp3" value="30">
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Рассчитать</button>
 
   <div id="result" class="result"></div>
 
 </div>
-
 </div>
 
 <script>
-let currentSide = 'long';
+let side = 'long';
 
-const btnLong = document.getElementById('btnLong');
-const btnShort = document.getElementById('btnShort');
+btnLong.onclick = () => { side='long'; btnLong.classList.add('active'); btnShort.classList.remove('active'); }
+btnShort.onclick = () => { side='short'; btnShort.classList.add('active'); btnLong.classList.remove('active'); }
 
-btnLong.onclick = () => {
-  currentSide = 'long';
-  btnLong.classList.add('active');
-  btnShort.classList.remove('active');
-};
-
-btnShort.onclick = () => {
-  currentSide = 'short';
-  btnShort.classList.add('active');
-  btnLong.classList.remove('active');
-};
-
-function doCalc() {
-  const deposit = +document.getElementById('deposit').value;
-  const trade = +document.getElementById('trade').value;
-  const leverage = +document.getElementById('leverage').value;
-  const entry = +document.getElementById('entry').value;
-  const rr = +document.getElementById('rr').value;
-
-  if (!deposit || !trade || !entry || !rr) {
-    document.getElementById('result').innerText = 'Введите все значения!';
-    document.getElementById('result').style.display = 'block';
-    return;
+const sliders = [tp1,tp2,tp3];
+sliders.forEach(sl=>{
+  sl.oninput=()=>{
+    let sum=tp1.valueAsNumber+tp2.valueAsNumber+tp3.valueAsNumber;
+    if(sum!==100) tp3.value=Math.max(0,100-tp1.valueAsNumber-tp2.valueAsNumber);
+    tp1p.textContent=tp1.value;
+    tp2p.textContent=tp2.value;
+    tp3p.textContent=tp3.value;
   }
+});
 
-  // реальная сумма позиции
-  const realTrade = trade / (leverage || 1);
+function calculate(){
+  const deposit=+depositInput.value;
+  const trade=+tradeInput.value;
+  const leverage=+leverageInput.value||1;
+  const entry=+entryInput.value;
 
-  // риск 0.8% от депозита
-  const riskUsd = deposit * 0.008;
+  const riskUsd=deposit*0.008;
+  const realTrade=trade/leverage;
+  const slPercent=(riskUsd/realTrade)*100;
 
-  // стоп в %
-  const stopPercent = (riskUsd / realTrade) * 100;
+  const slPrice=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
 
-  // SL
-  const slPrice = currentSide === 'long'
-    ? entry * (1 - stopPercent / 100)
-    : entry * (1 + stopPercent / 100);
+  const tpPrice=r=>side==='long'
+    ? entry+(entry-slPrice)*r
+    : entry-(slPrice-entry)*r;
 
-  // TP на основе RR
-  const tpPercent = stopPercent * rr;
-  const tpPrice = currentSide === 'long'
-    ? entry * (1 + tpPercent / 100)
-    : entry * (1 - tpPercent / 100);
+  const bePrice=entry;
 
-  const result = document.getElementById('result');
-  result.style.display = 'block';
-  result.innerHTML = `
-    <b>Сторона:</b> ${currentSide.toUpperCase()}<br>
+  result.style.display='block';
+  result.innerHTML=`
+    <b>Сторона:</b> ${side.toUpperCase()}<br>
     <b>Риск:</b> $${riskUsd.toFixed(2)} (0.8%)<br>
-    <b>Фактическая сумма:</b> $${realTrade.toFixed(2)}<br>
-    <b>Стоп-лосс:</b> ${stopPercent.toFixed(2)}%<br>
+
+    <div class="real-trade">Фактическая сумма: $${realTrade.toFixed(2)}</div>
+
     <b>Цена SL:</b> ${slPrice.toFixed(2)}<br>
-    <b>RR:</b> 1:${rr}<br>
-    <b>Цена TP:</b> ${tpPrice.toFixed(2)}
+
+    <div class="tp">TP1 → ${tpPrice(1).toFixed(2)} | +$${(riskUsd*1*tp1.value/100).toFixed(2)}</div>
+    <div class="tp">TP2 → ${tpPrice(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
+    <div class="tp">TP3 → ${tpPrice(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
+
+    <div class="be">Безубыток после TP1 → ${bePrice.toFixed(2)}</div>
   `;
 }
+
+const depositInput=document.getElementById('deposit');
+const tradeInput=document.getElementById('trade');
+const leverageInput=document.getElementById('leverage');
+const entryInput=document.getElementById('entry');
+const result=document.getElementById('result');
 </script>
 
 </body>
