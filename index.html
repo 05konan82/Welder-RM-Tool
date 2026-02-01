@@ -35,7 +35,6 @@ h1 {
   box-shadow: 0 0 30px rgba(0,0,0,0.6);
 }
 
-/* SIDE */
 .side-buttons {
   display: flex;
   gap: 8px;
@@ -56,7 +55,6 @@ button {
 .shortBtn { background: #ef4444; }
 button.active { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
 
-/* INPUTS */
 label {
   font-size: 13px;
   margin-top: 12px;
@@ -74,14 +72,10 @@ input[type="number"] {
   color: #fff;
 }
 
-/* RANGE */
-.range {
-  margin-top: 12px;
-}
+.range { margin-top: 12px; }
 .range span { font-size: 13px; }
 input[type="range"] { width: 100%; }
 
-/* BUTTON */
 .calc-btn {
   width: 100%;
   margin-top: 18px;
@@ -93,7 +87,6 @@ input[type="range"] { width: 100%; }
   color: #020617;
 }
 
-/* RESULT */
 .result {
   margin-top: 18px;
   background: #0f172a;
@@ -126,11 +119,12 @@ input[type="range"] { width: 100%; }
 
 .be {
   margin-top: 10px;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 10px;
   background: #022c22;
   color: #34d399;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgba(52,211,153,0.35);
 }
 
 @keyframes glow {
@@ -143,61 +137,59 @@ input[type="range"] { width: 100%; }
 
 <body>
 <div class="container">
-
 <h1>Welder RM Tool</h1>
 
 <div class="card">
 
-  <div class="side-buttons">
-    <button id="btnLong" class="longBtn active">LONG</button>
-    <button id="btnShort" class="shortBtn">SHORT</button>
-  </div>
+<div class="side-buttons">
+  <button id="btnLong" class="longBtn active">LONG</button>
+  <button id="btnShort" class="shortBtn">SHORT</button>
+</div>
 
-  <label>Депозит ($)</label>
-  <input id="deposit" type="number" value="1000">
+<label>Депозит ($)</label>
+<input id="deposit" type="number" value="1000">
 
-  <label>Сумма в сделку ($)</label>
-  <input id="trade" type="number" value="500">
+<label>Сумма в сделку ($)</label>
+<input id="trade" type="number" value="500">
 
-  <label>Плечо (x)</label>
-  <input id="leverage" type="number" value="1">
+<label>Плечо (x)</label>
+<input id="leverage" type="number" value="1">
 
-  <label>Цена входа</label>
-  <input id="entry" type="number" value="100">
+<label>Цена входа</label>
+<input id="entry" type="number" value="100">
 
-  <div class="range">
-    <span>TP1: <b id="tp1p">30</b>%</span>
-    <input type="range" id="tp1" value="30">
-  </div>
+<div class="range">
+  <span>TP1: <b id="tp1p">30</b>%</span>
+  <input type="range" id="tp1" value="30">
+</div>
 
-  <div class="range">
-    <span>TP2: <b id="tp2p">40</b>%</span>
-    <input type="range" id="tp2" value="40">
-  </div>
+<div class="range">
+  <span>TP2: <b id="tp2p">40</b>%</span>
+  <input type="range" id="tp2" value="40">
+</div>
 
-  <div class="range">
-    <span>TP3: <b id="tp3p">30</b>%</span>
-    <input type="range" id="tp3" value="30">
-  </div>
+<div class="range">
+  <span>TP3: <b id="tp3p">30</b>%</span>
+  <input type="range" id="tp3" value="30">
+</div>
 
-  <button class="calc-btn" onclick="calculate()">Рассчитать</button>
+<button class="calc-btn" onclick="calculate()">Рассчитать</button>
 
-  <div id="result" class="result"></div>
+<div id="result" class="result"></div>
 
 </div>
 </div>
 
 <script>
-let side = 'long';
+let side='long';
 
-btnLong.onclick = () => { side='long'; btnLong.classList.add('active'); btnShort.classList.remove('active'); }
-btnShort.onclick = () => { side='short'; btnShort.classList.add('active'); btnLong.classList.remove('active'); }
+btnLong.onclick=()=>{side='long';btnLong.classList.add('active');btnShort.classList.remove('active')}
+btnShort.onclick=()=>{side='short';btnShort.classList.add('active');btnLong.classList.remove('active')}
 
-const sliders = [tp1,tp2,tp3];
-sliders.forEach(sl=>{
+[tp1,tp2,tp3].forEach(sl=>{
   sl.oninput=()=>{
-    let sum=tp1.valueAsNumber+tp2.valueAsNumber+tp3.valueAsNumber;
-    if(sum!==100) tp3.value=Math.max(0,100-tp1.valueAsNumber-tp2.valueAsNumber);
+    let sum=+tp1.value+ +tp2.value+ +tp3.value;
+    if(sum!==100) tp3.value=Math.max(0,100-tp1.value-tp2.value);
     tp1p.textContent=tp1.value;
     tp2p.textContent=tp2.value;
     tp3p.textContent=tp3.value;
@@ -214,13 +206,10 @@ function calculate(){
   const realTrade=trade/leverage;
   const slPercent=(riskUsd/realTrade)*100;
 
-  const slPrice=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
+  const sl=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
+  const tp=r=>side==='long'?entry+(entry-sl)*r:entry-(sl-entry)*r;
 
-  const tpPrice=r=>side==='long'
-    ? entry+(entry-slPrice)*r
-    : entry-(slPrice-entry)*r;
-
-  const bePrice=entry;
+  const be=entry;
 
   result.style.display='block';
   result.innerHTML=`
@@ -229,13 +218,16 @@ function calculate(){
 
     <div class="real-trade">Фактическая сумма: $${realTrade.toFixed(2)}</div>
 
-    <b>Цена SL:</b> ${slPrice.toFixed(2)}<br>
+    <b>Начальный SL:</b> ${sl.toFixed(2)}<br>
 
-    <div class="tp">TP1 → ${tpPrice(1).toFixed(2)} | +$${(riskUsd*1*tp1.value/100).toFixed(2)}</div>
-    <div class="tp">TP2 → ${tpPrice(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
-    <div class="tp">TP3 → ${tpPrice(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
+    <div class="tp">TP1 → ${tp(1).toFixed(2)} | +$${(riskUsd*tp1.value/100).toFixed(2)}</div>
+    <div class="tp">TP2 → ${tp(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
+    <div class="tp">TP3 → ${tp(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
 
-    <div class="be">Безубыток после TP1 → ${bePrice.toFixed(2)}</div>
+    <div class="be">
+      После TP1 → SL переносится в BE<br>
+      Новый SL: ${be.toFixed(2)} (риск 0)
+    </div>
   `;
 }
 
@@ -245,6 +237,5 @@ const leverageInput=document.getElementById('leverage');
 const entryInput=document.getElementById('entry');
 const result=document.getElementById('result');
 </script>
-
 </body>
 </html>
