@@ -19,187 +19,198 @@
 *{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
 
 body{
-  background:radial-gradient(circle at top,#0f1623,#05080d);
+  background:#05080d;
   color:var(--text);
   margin:0;
-  padding:20px;
+  padding:18px;
   display:flex;
   justify-content:center;
 }
 
-.container{
-  width:100%;
-  max-width:420px;
-}
+.container{max-width:420px;width:100%}
 
 h1{
   text-align:center;
-  margin-bottom:16px;
+  margin-bottom:14px;
   font-weight:800;
   background:linear-gradient(90deg,var(--accent1),var(--accent2));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 18px rgba(0,198,255,.35);
 }
 
 .card{
-  background:linear-gradient(180deg,#141b2b,#0f1523);
+  background:#0f1523;
   border-radius:16px;
-  padding:18px;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  padding:16px;
 }
 
-.switch{
-  display:flex;
-  gap:10px;
-  margin-bottom:12px;
-}
-
+.switch{display:flex;gap:8px}
 .switch button{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  font-weight:700;
-  font-size:15px;
-  color:#fff;
-  opacity:.5;
-  transition:.2s;
+  flex:1;padding:10px;border:none;border-radius:10px;
+  font-weight:700;color:#fff;opacity:.5;cursor:pointer
+}
+.long{background:var(--green)}
+.short{background:var(--red)}
+.active{opacity:1}
+
+label{font-size:12px;margin-top:10px;display:block;opacity:.8}
+input,select{
+  width:100%;margin-top:6px;padding:10px;
+  border-radius:10px;border:none;
+  background:#1b2233;color:#fff
 }
 
-.switch .long{background:var(--green)}
-.switch .short{background:var(--red)}
-.switch button.active{
-  opacity:1;
-  box-shadow:0 0 15px rgba(255,255,255,.2)
-}
-
-label{
-  font-size:13px;
-  opacity:.85;
+.addTp{
   margin-top:10px;
-  display:block;
+  font-size:13px;
+  color:#38bdf8;
+  cursor:pointer;
 }
 
-input{
-  width:100%;
-  margin-top:6px;
-  padding:12px;
+.tpBlock{
+  margin-top:10px;
+  background:#05080d;
+  padding:10px;
   border-radius:10px;
-  border:none;
-  background:#1b2233;
-  color:#fff;
-  font-size:15px;
 }
 
 button.calc{
-  margin-top:16px;
+  margin-top:14px;
   width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  font-size:16px;
+  padding:12px;
+  border:none;border-radius:14px;
   font-weight:800;
   background:linear-gradient(90deg,var(--accent1),var(--accent2));
-  color:#000;
-  box-shadow:0 0 25px rgba(0,198,255,.4);
+  color:#000;cursor:pointer
 }
 
 .result{
-  margin-top:16px;
-  background:linear-gradient(180deg,#0d1320,#090e18);
-  border-radius:14px;
-  padding:14px;
+  margin-top:14px;
+  background:#05080d;
+  border-radius:12px;
+  padding:12px;
   font-size:14px;
-  line-height:1.5;
 }
 
-.green{color:var(--green)}
-.red{color:var(--red)}
+.tpRes{
+  margin-top:6px;
+  padding:8px;
+  border-radius:8px;
+  background:#0f172a;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
-  <h1>Welder RM Tool</h1>
+<h1>Welder RM Tool</h1>
 
-  <div class="card">
-    <div class="switch">
-      <button id="longBtn" class="long active">LONG</button>
-      <button id="shortBtn" class="short">SHORT</button>
-    </div>
-
-    <label>Депозит ($)</label>
-    <input id="deposit" type="number" value="1000">
-
-    <label>Сумма в сделку ($)</label>
-    <input id="trade" type="number" value="500">
-
-    <label>Плечо (x)</label>
-    <input id="leverage" type="number" value="1">
-
-    <label>Цена входа</label>
-    <input id="entry" type="number" value="100">
-
-    <label>Риск (%) от депозита</label>
-    <input id="riskPercent" type="number" step="0.1" value="0.8">
-
-    <button class="calc" onclick="calculate()">Рассчитать</button>
-
-    <div id="result" class="result" style="display:none"></div>
+<div class="card">
+  <div class="switch">
+    <button id="longBtn" class="long active">LONG</button>
+    <button id="shortBtn" class="short">SHORT</button>
   </div>
+
+  <label>Депозит ($)</label>
+  <input id="deposit" type="number" value="1000">
+
+  <label>Сумма в сделку ($)</label>
+  <input id="trade" type="number" value="500">
+
+  <label>Плечо (x)</label>
+  <input id="leverage" type="number" value="1">
+
+  <label>Цена входа</label>
+  <input id="entry" type="number" value="100">
+
+  <label>Риск (%)</label>
+  <input id="riskPercent" type="number" step="0.1" value="0.8">
+
+  <div id="tpContainer"></div>
+  <div class="addTp" onclick="addTP()">+ Добавить TP</div>
+
+  <button class="calc" onclick="calculate()">Рассчитать</button>
+
+  <div id="result" class="result" style="display:none"></div>
+</div>
 </div>
 
 <script>
-let side = "LONG";
+let side="LONG";
+let tpCount=0;
 
-document.getElementById("longBtn").onclick = () => setSide("LONG");
-document.getElementById("shortBtn").onclick = () => setSide("SHORT");
+longBtn.onclick=()=>setSide("LONG");
+shortBtn.onclick=()=>setSide("SHORT");
 
 function setSide(s){
-  side = s;
-  longBtn.classList.toggle("active", s==="LONG");
-  shortBtn.classList.toggle("active", s==="SHORT");
+  side=s;
+  longBtn.classList.toggle("active",s==="LONG");
+  shortBtn.classList.toggle("active",s==="SHORT");
+}
+
+function addTP(){
+  if(tpCount>=4) return;
+  tpCount++;
+  tpContainer.insertAdjacentHTML("beforeend",`
+    <div class="tpBlock">
+      <b>TP${tpCount}</b>
+      <select id="tpType${tpCount}">
+        <option value="percent">% от входа</option>
+        <option value="price">Цена</option>
+      </select>
+      <input id="tpVal${tpCount}" type="number" placeholder="Значение">
+    </div>
+  `);
 }
 
 function calculate(){
-  const deposit = +deposit.value;
-  const trade = +trade.value;
-  const leverage = +leverage.value;
-  const entry = +entry.value;
-  const riskPct = +riskPercent.value;
+  const dep=+deposit.value;
+  const tradeVal=+trade.value;
+  const lev=+leverage.value||1;
+  const entryVal=+entry.value;
+  const riskPct=+riskPercent.value;
 
-  if(!deposit || !trade || !entry || !riskPct) return;
+  if(!dep||!tradeVal||!entryVal||!riskPct) return;
 
-  // риск в $
-  const riskUsd = deposit * (riskPct / 100);
+  const riskUsd=dep*(riskPct/100);
+  const slPercent=(riskUsd/tradeVal)*100;
+  const realTrade=tradeVal/lev;
 
-  // стоп % СТРОГО от суммы в сделку
-  const slPercent = (riskUsd / trade) * 100;
+  let slPrice = side==="LONG"
+    ? entryVal*(1-slPercent/100)
+    : entryVal*(1+slPercent/100);
 
-  // фактическая сумма
-  const realTrade = trade / leverage;
+  let html=`
+    <b>${side}</b><br>
+    Риск: $${riskUsd.toFixed(2)}<br>
+    Фактическая сумма: $${realTrade.toFixed(2)}<br>
+    Стоп-лосс: ${slPercent.toFixed(2)}%<br>
+    Цена SL: ${slPrice.toFixed(2)}
+  `;
 
-  let slPrice;
-  if(side === "LONG"){
-    slPrice = entry * (1 - slPercent / 100);
-  }else{
-    slPrice = entry * (1 + slPercent / 100);
+  for(let i=1;i<=tpCount;i++){
+    const type=document.getElementById(`tpType${i}`).value;
+    const val=+document.getElementById(`tpVal${i}`).value;
+    if(!val) continue;
+
+    let tpPrice = type==="percent"
+      ? (side==="LONG"? entryVal*(1+val/100):entryVal*(1-val/100))
+      : val;
+
+    let profit = side==="LONG"
+      ? (tpPrice-entryVal)*realTrade
+      : (entryVal-tpPrice)*realTrade;
+
+    html+=`
+      <div class="tpRes">
+        TP${i}: ${tpPrice.toFixed(2)}<br>
+        Прибыль: $${profit.toFixed(2)}
+      </div>`;
   }
 
-  document.getElementById("result").style.display = "block";
-  document.getElementById("result").innerHTML = `
-    <b>${side}</b><br>
-    Риск: <b>$${riskUsd.toFixed(2)}</b> (${riskPct}%)<br>
-    Сумма в сделку: <b>$${trade.toFixed(2)}</b><br>
-    Фактическая сумма: <b>$${realTrade.toFixed(2)}</b><br>
-    Стоп-лосс: <b>${slPercent.toFixed(2)}%</b><br>
-    Цена SL: <b class="red">${slPrice.toFixed(2)}</b>
-  `;
+  result.style.display="block";
+  result.innerHTML=html;
 }
 </script>
-
 </body>
 </html>
