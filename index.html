@@ -12,10 +12,8 @@
   --input:#161e30;
   --blue:#22d3ee;
   --orange:#f59e0b;
-
   --long:#00ff88;
   --short:#ff2d2d;
-
   --text:#e5e7eb;
 }
 
@@ -31,13 +29,20 @@ body{
   color:var(--text);
 }
 
-.wrapper{width:100%;max-width:430px;padding:20px}
+.wrapper{width:100%;max-width:440px;padding:20px}
+
+.logo{
+  display:block;
+  margin:0 auto 8px;
+  max-width:140px;
+  filter:drop-shadow(0 0 18px rgba(34,211,238,.7));
+}
 
 h1{
   text-align:center;
-  font-size:28px;
+  font-size:26px;
   font-weight:900;
-  margin-bottom:16px;
+  margin-bottom:14px;
   background:linear-gradient(90deg,var(--blue),var(--orange));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -50,7 +55,7 @@ h1{
   box-shadow:0 0 60px rgba(0,0,0,.7);
 }
 
-/* ===== SIDE BUTTONS ===== */
+/* SIDE */
 .switch{display:flex;gap:14px;margin-bottom:14px}
 .switch button{
   flex:1;
@@ -65,23 +70,16 @@ h1{
   color:#000;
 }
 
-.long{
-  background:linear-gradient(135deg,#00ffb3,#00ff88);
-}
-.short{
-  background:linear-gradient(135deg,#ff5c5c,#ff2d2d);
-}
+.long{background:linear-gradient(135deg,#00ffd0,#00ff88)}
+.short{background:linear-gradient(135deg,#ff6a6a,#ff2d2d)}
 
 .active{
   opacity:1;
-  box-shadow:
-    0 0 25px currentColor,
-    0 0 60px currentColor,
-    inset 0 0 18px rgba(255,255,255,.55);
+  box-shadow:0 0 30px currentColor, inset 0 0 18px rgba(255,255,255,.6);
   transform:scale(1.06);
 }
 
-/* ===== INPUTS ===== */
+/* INPUTS */
 label{display:block;font-size:13px;opacity:.85;margin-top:12px}
 input,select{
   width:100%;
@@ -94,13 +92,12 @@ input,select{
   font-size:15px;
 }
 
-/* ===== TP BUTTONS ===== */
+/* TP */
 .tp-controls{
   display:flex;
   gap:10px;
   margin-top:14px;
 }
-
 .tp-controls button{
   flex:1;
   padding:10px;
@@ -110,8 +107,14 @@ input,select{
   color:#9ca3af;
   cursor:pointer;
 }
+.tp-block{
+  margin-top:12px;
+  padding:12px;
+  background:#050814;
+  border-radius:14px;
+}
 
-/* ===== CALC ===== */
+/* CALC */
 .calc{
   width:100%;
   margin-top:18px;
@@ -125,15 +128,7 @@ input,select{
   color:#000;
 }
 
-/* ===== TP ===== */
-.tp-block{
-  margin-top:12px;
-  padding:12px;
-  background:#050814;
-  border-radius:14px;
-}
-
-/* ===== RESULT ===== */
+/* RESULT */
 .result{
   margin-top:18px;
   background:#050814;
@@ -142,7 +137,6 @@ input,select{
   font-size:14px;
   line-height:1.65;
 }
-
 .highlight{
   color:#7dd3fc;
   font-weight:900;
@@ -153,6 +147,9 @@ input,select{
 
 <body>
 <div class="wrapper">
+
+<!-- ЛОГОТИП -->
+<img src="logo.svg" class="logo" alt="Welder RM Tool">
 
 <h1>Welder RM Tool</h1>
 
@@ -197,20 +194,19 @@ let position = "LONG";
 let tpCount = 0;
 
 /* SIDE */
-longBtn.onclick = ()=>setSide("LONG");
-shortBtn.onclick = ()=>setSide("SHORT");
+document.getElementById("longBtn").onclick = ()=>setSide("LONG");
+document.getElementById("shortBtn").onclick = ()=>setSide("SHORT");
 
 function setSide(side){
   position = side;
-  longBtn.classList.toggle("active", side==="LONG");
-  shortBtn.classList.toggle("active", side==="SHORT");
+  document.getElementById("longBtn").classList.toggle("active", side==="LONG");
+  document.getElementById("shortBtn").classList.toggle("active", side==="SHORT");
 }
 
 /* TP */
 function addTP(){
   if(tpCount >= 4) return;
   tpCount++;
-
   const div = document.createElement("div");
   div.className = "tp-block";
   div.innerHTML = `
@@ -221,55 +217,57 @@ function addTP(){
     </select>
     <input class="tpValue" type="number" placeholder="Значение">
   `;
-  tpContainer.appendChild(div);
+  document.getElementById("tpContainer").appendChild(div);
 }
 
 function removeTP(){
-  if(tpCount <= 0) return;
-  tpContainer.removeChild(tpContainer.lastElementChild);
+  const c = document.getElementById("tpContainer");
+  if(tpCount<=0) return;
+  c.removeChild(c.lastElementChild);
   tpCount--;
 }
 
 /* CALC */
 function calculate(){
-  const deposit = +deposit.value;
-  const trade = +trade.value;
-  const leverage = +leverage.value || 1;
-  const entry = +entry.value;
-  const riskPct = +risk.value;
+  const deposit = +document.getElementById("deposit").value;
+  const trade = +document.getElementById("trade").value;
+  const leverage = +document.getElementById("leverage").value || 1;
+  const entry = +document.getElementById("entry").value;
+  const riskPct = +document.getElementById("risk").value;
+
+  if(!deposit||!trade||!entry||!riskPct) return;
 
   const riskUsd = deposit * riskPct / 100;
   const slPct = (riskUsd / trade) * 100;
 
   const slPrice = position==="LONG"
-    ? entry * (1 - slPct/100)
-    : entry * (1 + slPct/100);
+    ? entry*(1-slPct/100)
+    : entry*(1+slPct/100);
 
   const realTrade = trade / leverage;
 
-  let tpHtml = "";
+  let tpHtml="";
   document.querySelectorAll(".tp-block").forEach((tp,i)=>{
     const type = tp.querySelector(".tpType").value;
     const val = +tp.querySelector(".tpValue").value;
     if(!val) return;
 
-    let tpPrice = type==="percent"
-      ? (position==="LONG"
-          ? entry*(1+val/100)
-          : entry*(1-val/100))
+    const tpPrice = type==="percent"
+      ? (position==="LONG"?entry*(1+val/100):entry*(1-val/100))
       : val;
 
     const profitPct = position==="LONG"
       ? (tpPrice-entry)/entry*100
       : (entry-tpPrice)/entry*100;
 
-    const profitUsd = trade * profitPct / 100;
+    const profitUsd = trade*profitPct/100;
 
-    tpHtml += `TP${i+1}: ${tpPrice.toFixed(2)} | +$${profitUsd.toFixed(2)}<br>`;
+    tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profitUsd.toFixed(2)}<br>`;
   });
 
-  result.style.display="block";
-  result.innerHTML = `
+  const res=document.getElementById("result");
+  res.style.display="block";
+  res.innerHTML=`
     <b>${position}</b><br>
     Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
     <span class="highlight">Фактическая сумма: $${realTrade.toFixed(2)}</span><br>
