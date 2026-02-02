@@ -1,215 +1,201 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welder RM Tool</title>
 
 <style>
 :root{
-  --bg:#0b0f14;
-  --card:#121826;
-  --accent1:#00c6ff;
-  --accent2:#ff9f1a;
-  --green:#18c77e;
-  --red:#ef5350;
-  --text:#eaeaea;
+  --bg:#070b12;
+  --card:#0f1625;
+  --input:#161e30;
+  --blue:#22d3ee;
+  --orange:#f59e0b;
+  --green:#19c37d;
+  --red:#ef4444;
+  --text:#e5e7eb;
 }
 
-*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+*{
+  box-sizing:border-box;
+  font-family:Inter,system-ui,sans-serif;
+}
 
 body{
-  background:radial-gradient(circle at top,#0f1623,#05080d);
-  color:var(--text);
   margin:0;
-  padding:20px;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0b1220,#05070d 70%);
   display:flex;
   justify-content:center;
+  align-items:center;
+  color:var(--text);
 }
 
-.container{
+.wrapper{
   width:100%;
   max-width:420px;
+  padding:20px;
 }
 
 h1{
   text-align:center;
-  margin-bottom:16px;
+  font-size:28px;
   font-weight:800;
-  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  margin-bottom:18px;
+  background:linear-gradient(90deg,var(--blue),var(--orange));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 18px rgba(0,198,255,.35);
 }
 
 .card{
-  background:linear-gradient(180deg,#141b2b,#0f1523);
-  border-radius:16px;
+  background:linear-gradient(180deg,#0f172a,#0b1220);
+  border-radius:20px;
   padding:18px;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  box-shadow:0 0 40px rgba(0,0,0,.6);
 }
 
 .switch{
   display:flex;
   gap:10px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 .switch button{
   flex:1;
   padding:12px;
-  border-radius:10px;
   border:none;
-  cursor:pointer;
-  font-weight:700;
-  font-size:15px;
+  border-radius:14px;
+  font-weight:800;
   color:#fff;
-  opacity:.5;
-  transition:.2s;
+  opacity:.4;
+  cursor:pointer;
 }
 
 .switch .long{background:var(--green)}
 .switch .short{background:var(--red)}
-.switch button.active{opacity:1;box-shadow:0 0 15px rgba(255,255,255,.2)}
+.switch .active{opacity:1}
 
 label{
+  display:block;
   font-size:13px;
   opacity:.85;
-  margin-top:10px;
-  display:block;
+  margin-top:12px;
 }
 
 input{
   width:100%;
   margin-top:6px;
   padding:12px;
-  border-radius:10px;
+  border-radius:14px;
   border:none;
-  background:#1b2233;
+  background:var(--input);
   color:#fff;
   font-size:15px;
 }
 
-button.calc{
-  margin-top:16px;
+.calc{
   width:100%;
+  margin-top:18px;
   padding:14px;
   border:none;
-  border-radius:14px;
-  cursor:pointer;
+  border-radius:16px;
   font-size:16px;
   font-weight:800;
-  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--blue),var(--orange));
   color:#000;
-  box-shadow:0 0 25px rgba(0,198,255,.4);
 }
 
 .result{
-  margin-top:16px;
-  background:linear-gradient(180deg,#0d1320,#090e18);
+  margin-top:18px;
+  background:#050814;
   border-radius:14px;
   padding:14px;
   font-size:14px;
-  line-height:1.5;
+  line-height:1.55;
 }
-
-.result b{font-weight:700}
-.green{color:var(--green)}
-.red{color:var(--red)}
 </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>Welder RM Tool</h1>
+<div class="wrapper">
 
-  <div class="card">
-    <div class="switch">
-      <button id="longBtn" class="long active">LONG</button>
-      <button id="shortBtn" class="short">SHORT</button>
-    </div>
+<h1>Welder RM Tool</h1>
 
-    <label>Депозит ($)</label>
-    <input id="deposit" type="number" value="1000">
+<div class="card">
 
-    <label>Сумма в сделку ($)</label>
-    <input id="trade" type="number" value="500">
-
-    <label>Плечо (x)</label>
-    <input id="leverage" type="number" value="1">
-
-    <label>Цена входа</label>
-    <input id="entry" type="number" value="100">
-
-    <label>Риск (%)</label>
-    <input id="riskPercent" type="number" step="0.1" value="0.8">
-
-    <label>Risk / Reward (RR)</label>
-    <input id="rr" type="number" step="0.1" value="3">
-
-    <button class="calc" onclick="calculate()">Рассчитать</button>
-
-    <div id="result" class="result" style="display:none"></div>
+  <div class="switch">
+    <button id="longBtn" class="long active">LONG</button>
+    <button id="shortBtn" class="short">SHORT</button>
   </div>
+
+  <label>Депозит ($)</label>
+  <input id="deposit" type="number" value="1000">
+
+  <label>Сумма в сделку ($)</label>
+  <input id="trade" type="number" value="125">
+
+  <label>Плечо (x)</label>
+  <input id="leverage" type="number" value="1">
+
+  <label>Цена входа</label>
+  <input id="entry" type="number" value="100">
+
+  <label>Риск (%) от депозита</label>
+  <input id="risk" type="number" step="0.1" value="0.8">
+
+  <button class="calc" onclick="calculate()">Рассчитать</button>
+
+  <div id="result" class="result" style="display:none"></div>
+
+</div>
 </div>
 
 <script>
 let side = "LONG";
 
-document.getElementById("longBtn").onclick = () => setSide("LONG");
-document.getElementById("shortBtn").onclick = () => setSide("SHORT");
+longBtn.onclick = () => setSide("LONG");
+shortBtn.onclick = () => setSide("SHORT");
 
 function setSide(s){
   side = s;
-  document.getElementById("longBtn").classList.toggle("active", s==="LONG");
-  document.getElementById("shortBtn").classList.toggle("active", s==="SHORT");
+  longBtn.classList.toggle("active", s==="LONG");
+  shortBtn.classList.toggle("active", s==="SHORT");
 }
 
 function calculate(){
-  const deposit = +depositInput();
-  const trade = +tradeInput();
-  const leverage = +leverageInput();
-  const entry = +entryInput();
-  const riskPct = +riskInput();
-  const rr = +rrInput();
+  const depositVal = +deposit.value;
+  const tradeVal = +trade.value;
+  const leverageVal = +leverage.value || 1;
+  const entryVal = +entry.value;
+  const riskPctVal = +risk.value;
 
-  if(!deposit || !trade || !entry || !riskPct || !rr) return;
+  if(!depositVal || !tradeVal || !entryVal || !riskPctVal) return;
 
-  const realTrade = trade / leverage;
-  const riskUsd = deposit * (riskPct/100);
+  // Риск в $
+  const riskUsd = depositVal * (riskPctVal / 100);
 
-  const slPercent = (riskUsd / realTrade) * 100;
+  // ❗️СТОП % СЧИТАЕТСЯ ОТ СУММЫ В СДЕЛКУ
+  const slPercent = (riskUsd / tradeVal) * 100;
 
-  let slPrice, tpPrice;
-  if(side==="LONG"){
-    slPrice = entry * (1 - slPercent/100);
-    tpPrice = entry * (1 + (slPercent*rr)/100);
-  }else{
-    slPrice = entry * (1 + slPercent/100);
-    tpPrice = entry * (1 - (slPercent*rr)/100);
-  }
+  // Цена SL
+  const slPrice = side === "LONG"
+    ? entryVal * (1 - slPercent / 100)
+    : entryVal * (1 + slPercent / 100);
 
-  const profitUsd = Math.abs(tpPrice - entry) * realTrade / entry * entry;
+  // Фактическая сумма — только справка
+  const realTrade = tradeVal / leverageVal;
 
-  document.getElementById("result").style.display="block";
-  document.getElementById("result").innerHTML = `
+  result.style.display = "block";
+  result.innerHTML = `
     <b>${side}</b><br>
-    Риск: <b>$${riskUsd.toFixed(2)}</b> (${riskPct}%)<br>
-    Фактическая сумма: <b>$${realTrade.toFixed(2)}</b><br>
-    Стоп-лосс: <b>${slPercent.toFixed(2)}%</b><br>
-    Цена SL: <b>${slPrice.toFixed(2)}</b><br>
-    RR: <b>1:${rr}</b><br>
-    Цена TP: <b class="green">${tpPrice.toFixed(2)}</b><br>
-    Прибыль: <b class="green">$${profitUsd.toFixed(2)}</b>
+    Риск: $${riskUsd.toFixed(2)} (${riskPctVal}%)<br>
+    Фактическая сумма: $${realTrade.toFixed(2)}<br>
+    Стоп-лосс: ${slPercent.toFixed(2)}%<br>
+    Цена SL: ${slPrice.toFixed(2)}
   `;
 }
-
-function depositInput(){return document.getElementById("deposit").value}
-function tradeInput(){return document.getElementById("trade").value}
-function leverageInput(){return document.getElementById("leverage").value}
-function entryInput(){return document.getElementById("entry").value}
-function riskInput(){return document.getElementById("riskPercent").value}
-function rrInput(){return document.getElementById("rr").value}
 </script>
 
 </body>
