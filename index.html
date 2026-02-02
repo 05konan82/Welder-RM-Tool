@@ -17,18 +17,17 @@ body{
 }
 .container{
   width:100%;
-  max-width:430px;
+  max-width:420px;
   padding:0 12px;
 }
 h1{
   text-align:center;
-  margin-bottom:16px;
-  font-size:24px;
+  margin-bottom:14px;
 }
 .card{
   background:#111827;
   border-radius:16px;
-  padding:18px;
+  padding:16px;
   box-shadow:0 0 30px rgba(0,0,0,.6);
 }
 
@@ -36,14 +35,12 @@ h1{
 .side{
   display:flex;
   gap:8px;
-  margin-bottom:14px;
 }
 .side button{
   flex:1;
   padding:10px;
   border:none;
   border-radius:10px;
-  font-size:14px;
   color:#fff;
   cursor:pointer;
 }
@@ -53,50 +50,73 @@ h1{
 
 /* INPUTS */
 label{
-  font-size:13px;
-  margin-top:12px;
+  font-size:12px;
+  margin-top:10px;
   display:block;
   color:#9ca3af;
 }
-input{
+input,select{
   width:100%;
-  margin-top:6px;
-  padding:10px;
-  border-radius:10px;
+  margin-top:4px;
+  padding:8px;
+  border-radius:8px;
   border:none;
   background:#1f2937;
   color:#fff;
 }
 
+/* TP */
+.tpBlock{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#020617;
+  border:1px solid #1e293b;
+}
+.tpHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+}
+.tpToggle{
+  cursor:pointer;
+  color:#38bdf8;
+  font-size:13px;
+}
+
 /* BUTTON */
 .calc{
   width:100%;
-  margin-top:18px;
+  margin-top:16px;
   padding:12px;
   border-radius:12px;
   border:none;
   background:linear-gradient(90deg,#0ea5e9,#f97316);
   color:#020617;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
 }
 
 /* RESULT */
 .result{
-  margin-top:18px;
-  background:#0f172a;
-  border-radius:12px;
-  padding:14px;
-  font-size:14px;
-  line-height:1.6;
-  border:1px solid #1e293b;
   display:none;
+  margin-top:14px;
+  padding:12px;
+  border-radius:12px;
+  background:#0f172a;
+  border:1px solid #1e293b;
 }
 .sideText{
   text-align:center;
+  font-weight:800;
   font-size:18px;
-  font-weight:700;
-  margin-bottom:8px;
+}
+.tpRes{
+  margin-top:8px;
+  padding:8px;
+  border-radius:8px;
+  background:#020617;
 }
 .real{
   margin:10px 0;
@@ -106,13 +126,6 @@ input{
   color:#020617;
   font-weight:700;
   text-align:center;
-}
-.tp{
-  margin-top:8px;
-  padding:8px;
-  border-radius:8px;
-  background:#020617;
-  border:1px solid #1e293b;
 }
 </style>
 </head>
@@ -129,34 +142,34 @@ input{
 </div>
 
 <label>Депозит ($)</label>
-<input id="deposit" type="number" value="1000">
+<input id="deposit" value="1000">
 
-<label>Риск (%) от депозита</label>
-<input id="riskPercent" type="number" step="0.1" value="0.8">
+<label>Риск (%)</label>
+<input id="risk" value="0.8">
 
 <label>Сумма в сделку ($)</label>
-<input id="trade" type="number" value="500">
+<input id="trade" value="500">
 
 <label>Плечо (x)</label>
-<input id="leverage" type="number" value="1">
+<input id="lev" value="1">
 
 <label>Цена входа</label>
-<input id="entry" type="number" value="100">
+<input id="entry" value="100">
 
-<label>TP1 (%) — обязателен</label>
-<input id="tp1" type="number" value="1">
+<!-- TP1 -->
+<div class="tpBlock">
+  <div class="tpHeader">TP1</div>
+  <select id="tp1Type">
+    <option value="percent">%</option>
+    <option value="price">Цена</option>
+  </select>
+  <input id="tp1Val" value="1">
+</div>
 
-<label>TP2 (%)</label>
-<input id="tp2" type="number">
+<!-- TP2-5 -->
+<div id="tpContainer"></div>
 
-<label>TP3 (%)</label>
-<input id="tp3" type="number">
-
-<label>TP4 (%)</label>
-<input id="tp4" type="number">
-
-<label>TP5 (%)</label>
-<input id="tp5" type="number">
+<div class="tpToggle" onclick="addTP()">+ Добавить TP</div>
 
 <button class="calc" onclick="calc()">Рассчитать</button>
 
@@ -166,55 +179,50 @@ input{
 </div>
 
 <script>
-let side='long';
+let side='long', tpCount=1;
+longBtn.onclick=()=>{side='long';longBtn.classList.add('active');shortBtn.classList.remove('active');}
+shortBtn.onclick=()=>{side='short';shortBtn.classList.add('active');longBtn.classList.remove('active');}
 
-longBtn.onclick=()=>{
-  side='long';
-  longBtn.classList.add('active');
-  shortBtn.classList.remove('active');
-}
-shortBtn.onclick=()=>{
-  side='short';
-  shortBtn.classList.add('active');
-  longBtn.classList.remove('active');
+function addTP(){
+  if(tpCount>=5) return;
+  tpCount++;
+  tpContainer.innerHTML+=`
+  <div class="tpBlock" id="tp${tpCount}">
+    <div class="tpHeader">TP${tpCount}</div>
+    <select id="tp${tpCount}Type">
+      <option value="percent">%</option>
+      <option value="price">Цена</option>
+    </select>
+    <input id="tp${tpCount}Val">
+  </div>`;
 }
 
 function calc(){
-  const dep=+deposit.value;
-  const riskPct=+riskPercent.value;
-  const trade=+trade.value;
-  const lev=+leverage.value||1;
-  const entry=+entry.value;
-
-  const tps=[
-    +tp1.value,
-    +tp2.value,
-    +tp3.value,
-    +tp4.value,
-    +tp5.value
-  ].filter(v=>v>0);
-
-  if(!dep||!riskPct||!trade||!entry||tps.length===0) return;
-
-  const riskUsd=dep*(riskPct/100);
+  const dep=+deposit.value, riskP=+risk.value, trade=+trade.value;
+  const lev=+lev.value||1, entry=+entry.value;
+  const riskUsd=dep*(riskP/100);
   const realTrade=trade/lev;
 
   let html=`<div class="sideText">${side.toUpperCase()}</div>
             <div class="real">Фактическая сумма: $${realTrade.toFixed(2)}</div>`;
 
-  tps.forEach((p,i)=>{
-    const price=side==='long'
-      ? entry*(1+p/100)
-      : entry*(1-p/100);
+  for(let i=1;i<=tpCount;i++){
+    const type=document.getElementById(`tp${i}Type`).value;
+    const val=+document.getElementById(`tp${i}Val`).value;
+    if(!val) continue;
 
-    const profit=riskUsd*(p/tps[0]);
+    const price=type==='percent'
+      ? side==='long'? entry*(1+val/100):entry*(1-val/100)
+      : val;
+
+    const profit=riskUsd*i;
 
     html+=`
-      <div class="tp">
-        TP${i+1}: ${price.toFixed(2)}<br>
-        Прибыль: +$${profit.toFixed(2)}
-      </div>`;
-  });
+    <div class="tpRes">
+      TP${i}: ${price.toFixed(2)}<br>
+      Прибыль: +$${profit.toFixed(2)}
+    </div>`;
+  }
 
   result.style.display='block';
   result.innerHTML=html;
