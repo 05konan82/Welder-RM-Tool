@@ -43,6 +43,7 @@ h1{
   border-radius:10px;
   color:#fff;
   cursor:pointer;
+  font-weight:600;
 }
 .long{background:#10b981;}
 .short{background:#ef4444;}
@@ -141,19 +142,19 @@ input,select{
 </div>
 
 <label>Депозит ($)</label>
-<input id="deposit" value="1000">
+<input id="deposit" type="number" value="1000">
 
 <label>Риск (%)</label>
-<input id="risk" value="0.8">
+<input id="risk" type="number" value="0.8">
 
 <label>Сумма в сделку ($)</label>
-<input id="trade" value="500">
+<input id="trade" type="number" value="500">
 
 <label>Плечо (x)</label>
-<input id="lev" value="1">
+<input id="lev" type="number" value="1">
 
 <label>Цена входа</label>
-<input id="entry" value="100">
+<input id="entry" type="number" value="100">
 
 <div id="tpContainer"></div>
 
@@ -167,70 +168,77 @@ input,select{
 </div>
 
 <script>
-let side='long', tpCount=0;
+let side = 'long';
+let tpCount = 0;
 
-longBtn.onclick=()=>{
-  side='long';
+longBtn.onclick = () => {
+  side = 'long';
   longBtn.classList.add('active');
   shortBtn.classList.remove('active');
 }
-shortBtn.onclick=()=>{
-  side='short';
+shortBtn.onclick = () => {
+  side = 'short';
   shortBtn.classList.add('active');
   longBtn.classList.remove('active');
 }
 
 function addTP(){
-  if(tpCount>=4) return;
+  if(tpCount >= 4) return;
   tpCount++;
-  tpContainer.innerHTML+=`
-    <div class="tpBlock" id="tp${tpCount}">
+  tpContainer.insertAdjacentHTML('beforeend', `
+    <div class="tpBlock">
       <div class="tpHeader">TP${tpCount}</div>
       <select id="tp${tpCount}Type">
         <option value="percent">% от входа</option>
         <option value="price">Цена актива</option>
       </select>
-      <input id="tp${tpCount}Val" placeholder="Введите значение">
-    </div>`;
+      <input id="tp${tpCount}Val" type="number" placeholder="Введите значение">
+    </div>
+  `);
 }
 
 function calc(){
-  const dep=+deposit.value;
-  const riskP=+risk.value;
-  const trade=+trade.value;
-  const lev=+lev.value||1;
-  const entry=+entry.value;
+  const trade = +document.getElementById('trade').value;
+  const lev = +document.getElementById('lev').value || 1;
+  const entry = +document.getElementById('entry').value;
 
-  if(!dep||!riskP||!trade||!entry) return;
+  if(!trade || !entry) return;
 
-  const riskUsd=dep*(riskP/100);
-  const realTrade=trade/lev;
+  const realVolume = trade / lev;
 
-  let html=`<div class="sideText">${side.toUpperCase()}</div>
-            <div class="real">Фактическая сумма: $${realTrade.toFixed(2)}</div>`;
+  let html = `
+    <div class="sideText">${side.toUpperCase()}</div>
+    <div class="real">Фактическая сумма: $${realVolume.toFixed(2)}</div>
+  `;
 
   for(let i=1;i<=tpCount;i++){
-    const type=document.getElementById(`tp${i}Type`).value;
-    const val=+document.getElementById(`tp${i}Val`).value;
+    const type = document.getElementById(`tp${i}Type`).value;
+    const val = +document.getElementById(`tp${i}Val`).value;
     if(!val) continue;
 
-    const price = type==='percent'
-      ? (side==='long'
-          ? entry*(1+val/100)
-          : entry*(1-val/100))
-      : val;
+    let tpPrice;
+    if(type === 'percent'){
+      tpPrice = side === 'long'
+        ? entry * (1 + val/100)
+        : entry * (1 - val/100);
+    } else {
+      tpPrice = val;
+    }
 
-    const profit = riskUsd * i;
+    const profit = side === 'long'
+      ? (tpPrice - entry) * realVolume
+      : (entry - tpPrice) * realVolume;
 
-    html+=`
+    html += `
       <div class="tpRes">
-        TP${i}: ${price.toFixed(2)}<br>
-        Прибыль: +$${profit.toFixed(2)}
-      </div>`;
+        TP${i}: ${tpPrice.toFixed(2)}<br>
+        Прибыль: $${profit.toFixed(2)}
+      </div>
+    `;
   }
 
-  result.style.display='block';
-  result.innerHTML=html;
+  result.style.display = 'block';
+  result.innerHTML = html;
 }
 </script>
 
