@@ -74,14 +74,13 @@ input,select{
   border:1px solid #1e293b;
 }
 .tpHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
   font-weight:600;
+  margin-bottom:6px;
 }
-.tpToggle{
-  cursor:pointer;
+.addTp{
+  margin-top:10px;
   color:#38bdf8;
+  cursor:pointer;
   font-size:13px;
 }
 
@@ -156,20 +155,9 @@ input,select{
 <label>Цена входа</label>
 <input id="entry" value="100">
 
-<!-- TP1 -->
-<div class="tpBlock">
-  <div class="tpHeader">TP1</div>
-  <select id="tp1Type">
-    <option value="percent">%</option>
-    <option value="price">Цена</option>
-  </select>
-  <input id="tp1Val" value="1">
-</div>
-
-<!-- TP2-5 -->
 <div id="tpContainer"></div>
 
-<div class="tpToggle" onclick="addTP()">+ Добавить TP</div>
+<div class="addTp" onclick="addTP()">+ Добавить TP</div>
 
 <button class="calc" onclick="calc()">Рассчитать</button>
 
@@ -179,27 +167,42 @@ input,select{
 </div>
 
 <script>
-let side='long', tpCount=1;
-longBtn.onclick=()=>{side='long';longBtn.classList.add('active');shortBtn.classList.remove('active');}
-shortBtn.onclick=()=>{side='short';shortBtn.classList.add('active');longBtn.classList.remove('active');}
+let side='long', tpCount=0;
+
+longBtn.onclick=()=>{
+  side='long';
+  longBtn.classList.add('active');
+  shortBtn.classList.remove('active');
+}
+shortBtn.onclick=()=>{
+  side='short';
+  shortBtn.classList.add('active');
+  longBtn.classList.remove('active');
+}
 
 function addTP(){
-  if(tpCount>=5) return;
+  if(tpCount>=4) return;
   tpCount++;
   tpContainer.innerHTML+=`
-  <div class="tpBlock" id="tp${tpCount}">
-    <div class="tpHeader">TP${tpCount}</div>
-    <select id="tp${tpCount}Type">
-      <option value="percent">%</option>
-      <option value="price">Цена</option>
-    </select>
-    <input id="tp${tpCount}Val">
-  </div>`;
+    <div class="tpBlock" id="tp${tpCount}">
+      <div class="tpHeader">TP${tpCount}</div>
+      <select id="tp${tpCount}Type">
+        <option value="percent">% от входа</option>
+        <option value="price">Цена актива</option>
+      </select>
+      <input id="tp${tpCount}Val" placeholder="Введите значение">
+    </div>`;
 }
 
 function calc(){
-  const dep=+deposit.value, riskP=+risk.value, trade=+trade.value;
-  const lev=+lev.value||1, entry=+entry.value;
+  const dep=+deposit.value;
+  const riskP=+risk.value;
+  const trade=+trade.value;
+  const lev=+lev.value||1;
+  const entry=+entry.value;
+
+  if(!dep||!riskP||!trade||!entry) return;
+
   const riskUsd=dep*(riskP/100);
   const realTrade=trade/lev;
 
@@ -211,17 +214,19 @@ function calc(){
     const val=+document.getElementById(`tp${i}Val`).value;
     if(!val) continue;
 
-    const price=type==='percent'
-      ? side==='long'? entry*(1+val/100):entry*(1-val/100)
+    const price = type==='percent'
+      ? (side==='long'
+          ? entry*(1+val/100)
+          : entry*(1-val/100))
       : val;
 
-    const profit=riskUsd*i;
+    const profit = riskUsd * i;
 
     html+=`
-    <div class="tpRes">
-      TP${i}: ${price.toFixed(2)}<br>
-      Прибыль: +$${profit.toFixed(2)}
-    </div>`;
+      <div class="tpRes">
+        TP${i}: ${price.toFixed(2)}<br>
+        Прибыль: +$${profit.toFixed(2)}
+      </div>`;
   }
 
   result.style.display='block';
