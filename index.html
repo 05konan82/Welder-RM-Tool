@@ -17,7 +17,7 @@ body{
 }
 .container{
   width:100%;
-  max-width:420px;
+  max-width:430px;
   padding:0 12px;
 }
 h1{
@@ -92,6 +92,12 @@ input{
   border:1px solid #1e293b;
   display:none;
 }
+.sideText{
+  text-align:center;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:8px;
+}
 .real{
   margin:10px 0;
   padding:10px;
@@ -107,14 +113,6 @@ input{
   border-radius:8px;
   background:#020617;
   border:1px solid #1e293b;
-}
-.be{
-  margin-top:10px;
-  padding:8px;
-  border-radius:8px;
-  background:#022c22;
-  color:#34d399;
-  font-weight:600;
 }
 </style>
 </head>
@@ -145,6 +143,21 @@ input{
 <label>Цена входа</label>
 <input id="entry" type="number" value="100">
 
+<label>TP1 (%) — обязателен</label>
+<input id="tp1" type="number" value="1">
+
+<label>TP2 (%)</label>
+<input id="tp2" type="number">
+
+<label>TP3 (%)</label>
+<input id="tp3" type="number">
+
+<label>TP4 (%)</label>
+<input id="tp4" type="number">
+
+<label>TP5 (%)</label>
+<input id="tp5" type="number">
+
 <button class="calc" onclick="calc()">Рассчитать</button>
 
 <div id="result" class="result"></div>
@@ -167,50 +180,44 @@ shortBtn.onclick=()=>{
 }
 
 function calc(){
-  const dep = +deposit.value;
-  const riskPct = +riskPercent.value;
-  const tradeVal = +trade.value;
-  const lev = +leverage.value || 1;
-  const entryVal = +entry.value;
+  const dep=+deposit.value;
+  const riskPct=+riskPercent.value;
+  const trade=+trade.value;
+  const lev=+leverage.value||1;
+  const entry=+entry.value;
 
-  if(!dep || !tradeVal || !entryVal || !riskPct) return;
+  const tps=[
+    +tp1.value,
+    +tp2.value,
+    +tp3.value,
+    +tp4.value,
+    +tp5.value
+  ].filter(v=>v>0);
 
-  const riskUsd = dep * (riskPct / 100);
-  const realTrade = tradeVal / lev;
-  const slPct = (riskUsd / realTrade) * 100;
+  if(!dep||!riskPct||!trade||!entry||tps.length===0) return;
 
-  const sl = side === 'long'
-    ? entryVal * (1 - slPct / 100)
-    : entryVal * (1 + slPct / 100);
+  const riskUsd=dep*(riskPct/100);
+  const realTrade=trade/lev;
 
-  const slDeviation = side === 'long'
-    ? ((entryVal - sl) / entryVal) * 100
-    : ((sl - entryVal) / entryVal) * 100;
+  let html=`<div class="sideText">${side.toUpperCase()}</div>
+            <div class="real">Фактическая сумма: $${realTrade.toFixed(2)}</div>`;
 
-  const tp = r => side === 'long'
-    ? entryVal + (entryVal - sl) * r
-    : entryVal - (sl - entryVal) * r;
+  tps.forEach((p,i)=>{
+    const price=side==='long'
+      ? entry*(1+p/100)
+      : entry*(1-p/100);
+
+    const profit=riskUsd*(p/tps[0]);
+
+    html+=`
+      <div class="tp">
+        TP${i+1}: ${price.toFixed(2)}<br>
+        Прибыль: +$${profit.toFixed(2)}
+      </div>`;
+  });
 
   result.style.display='block';
-  result.innerHTML = `
-    <b>Сторона:</b> ${side.toUpperCase()}<br>
-    <b>Риск:</b> $${riskUsd.toFixed(2)} (${riskPct}%)<br>
-
-    <div class="real">
-      Фактическая сумма: $${realTrade.toFixed(2)}
-    </div>
-
-    <b>SL:</b> ${sl.toFixed(2)}<br>
-    <b>SL отклонение:</b> ${slDeviation.toFixed(2)}% от Entry<br>
-
-    <div class="tp">TP1 → ${tp(1).toFixed(2)} | +$${riskUsd.toFixed(2)}</div>
-    <div class="tp">TP2 → ${tp(2).toFixed(2)} | +$${(riskUsd*2).toFixed(2)}</div>
-    <div class="tp">TP3 → ${tp(3).toFixed(2)} | +$${(riskUsd*3).toFixed(2)}</div>
-
-    <div class="be">
-      После TP1 → SL в BE (${entryVal.toFixed(2)})
-    </div>
-  `;
+  result.innerHTML=html;
 }
 </script>
 
