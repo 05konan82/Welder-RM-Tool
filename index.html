@@ -6,244 +6,212 @@
 <title>Welder RM Tool</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background: #0b0f14;
-  color: #e5e7eb;
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:#0b0f14;
+  color:#e5e7eb;
+  display:flex;
+  justify-content:center;
+  padding:16px 0;
 }
-
-.container {
-  width: 100%;
-  max-width: 420px;
-  padding: 0 12px;
+.container{
+  width:100%;
+  max-width:420px;
+  padding:0 12px;
 }
-
-h1 {
-  text-align: center;
-  margin-bottom: 16px;
-  font-size: 24px;
+h1{
+  text-align:center;
+  margin-bottom:16px;
+  font-size:24px;
 }
-
-.card {
-  background: #111827;
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+.card{
+  background:#111827;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 0 30px rgba(0,0,0,.6);
 }
 
 /* SIDE */
-.side-buttons {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
+.side{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
 }
-
-button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #fff;
+.side button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-size:14px;
+  color:#fff;
+  cursor:pointer;
 }
-
-.longBtn { background: #10b981; }
-.shortBtn { background: #ef4444; }
-button.active { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
+.long{background:#10b981;}
+.short{background:#ef4444;}
+.active{box-shadow:0 0 14px rgba(255,255,255,.35);}
 
 /* INPUTS */
-label {
-  font-size: 13px;
-  margin-top: 12px;
-  display: block;
-  color: #9ca3af;
+label{
+  font-size:13px;
+  margin-top:12px;
+  display:block;
+  color:#9ca3af;
 }
-
-input[type="number"] {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #1f2937;
-  color: #fff;
+input{
+  width:100%;
+  margin-top:6px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#1f2937;
+  color:#fff;
 }
-
-/* RANGE */
-.range {
-  margin-top: 12px;
-}
-.range span { font-size: 13px; }
-input[type="range"] { width: 100%; }
 
 /* BUTTON */
-.calc-btn {
-  width: 100%;
-  margin-top: 18px;
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(90deg,#0ea5e9,#f97316);
-  font-weight: 600;
-  cursor: pointer;
-  color: #020617;
+.calc{
+  width:100%;
+  margin-top:18px;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:linear-gradient(90deg,#0ea5e9,#f97316);
+  color:#020617;
+  font-weight:600;
+  cursor:pointer;
 }
 
 /* RESULT */
-.result {
-  margin-top: 18px;
-  background: #0f172a;
-  border-radius: 12px;
-  padding: 14px;
-  font-size: 14px;
-  line-height: 1.6;
-  border: 1px solid #1e293b;
-  display: none;
+.result{
+  margin-top:18px;
+  background:#0f172a;
+  border-radius:12px;
+  padding:14px;
+  font-size:14px;
+  line-height:1.6;
+  border:1px solid #1e293b;
+  display:none;
 }
-
-.real-trade {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 10px;
-  background: linear-gradient(135deg,#0ea5e9,#f97316);
-  color: #020617;
-  font-weight: 700;
-  text-align: center;
-  animation: glow 2.5s infinite ease-in-out;
+.real{
+  margin:10px 0;
+  padding:10px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0ea5e9,#f97316);
+  color:#020617;
+  font-weight:700;
+  text-align:center;
 }
-
-.tp {
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 8px;
-  background: #020617;
-  border: 1px solid #1e293b;
+.tp{
+  margin-top:8px;
+  padding:8px;
+  border-radius:8px;
+  background:#020617;
+  border:1px solid #1e293b;
 }
-
-.be {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 8px;
-  background: #022c22;
-  color: #34d399;
-  font-weight: 600;
-}
-
-@keyframes glow {
-  0% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
-  50% { box-shadow: 0 0 22px rgba(249,115,22,0.6); }
-  100% { box-shadow: 0 0 10px rgba(14,165,233,0.3); }
+.be{
+  margin-top:10px;
+  padding:8px;
+  border-radius:8px;
+  background:#022c22;
+  color:#34d399;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-
 <h1>Welder RM Tool</h1>
 
 <div class="card">
 
-  <div class="side-buttons">
-    <button id="btnLong" class="longBtn active">LONG</button>
-    <button id="btnShort" class="shortBtn">SHORT</button>
-  </div>
+<div class="side">
+  <button id="longBtn" class="long active">LONG</button>
+  <button id="shortBtn" class="short">SHORT</button>
+</div>
 
-  <label>Депозит ($)</label>
-  <input id="deposit" type="number" value="1000">
+<label>Депозит ($)</label>
+<input id="deposit" type="number" value="1000">
 
-  <label>Сумма в сделку ($)</label>
-  <input id="trade" type="number" value="500">
+<label>Риск (%) от депозита</label>
+<input id="riskPercent" type="number" step="0.1" value="0.8">
 
-  <label>Плечо (x)</label>
-  <input id="leverage" type="number" value="1">
+<label>Сумма в сделку ($)</label>
+<input id="trade" type="number" value="500">
 
-  <label>Цена входа</label>
-  <input id="entry" type="number" value="100">
+<label>Плечо (x)</label>
+<input id="leverage" type="number" value="1">
 
-  <div class="range">
-    <span>TP1: <b id="tp1p">30</b>%</span>
-    <input type="range" id="tp1" value="30">
-  </div>
+<label>Цена входа</label>
+<input id="entry" type="number" value="100">
 
-  <div class="range">
-    <span>TP2: <b id="tp2p">40</b>%</span>
-    <input type="range" id="tp2" value="40">
-  </div>
+<button class="calc" onclick="calc()">Рассчитать</button>
 
-  <div class="range">
-    <span>TP3: <b id="tp3p">30</b>%</span>
-    <input type="range" id="tp3" value="30">
-  </div>
-
-  <button class="calc-btn" onclick="calculate()">Рассчитать</button>
-
-  <div id="result" class="result"></div>
+<div id="result" class="result"></div>
 
 </div>
 </div>
 
 <script>
-let side = 'long';
+let side='long';
 
-btnLong.onclick = () => { side='long'; btnLong.classList.add('active'); btnShort.classList.remove('active'); }
-btnShort.onclick = () => { side='short'; btnShort.classList.add('active'); btnLong.classList.remove('active'); }
-
-const sliders = [tp1,tp2,tp3];
-sliders.forEach(sl=>{
-  sl.oninput=()=>{
-    let sum=tp1.valueAsNumber+tp2.valueAsNumber+tp3.valueAsNumber;
-    if(sum!==100) tp3.value=Math.max(0,100-tp1.valueAsNumber-tp2.valueAsNumber);
-    tp1p.textContent=tp1.value;
-    tp2p.textContent=tp2.value;
-    tp3p.textContent=tp3.value;
-  }
-});
-
-function calculate(){
-  const deposit=+depositInput.value;
-  const trade=+tradeInput.value;
-  const leverage=+leverageInput.value||1;
-  const entry=+entryInput.value;
-
-  const riskUsd=deposit*0.008;
-  const realTrade=trade/leverage;
-  const slPercent=(riskUsd/realTrade)*100;
-
-  const slPrice=side==='long'?entry*(1-slPercent/100):entry*(1+slPercent/100);
-
-  const tpPrice=r=>side==='long'
-    ? entry+(entry-slPrice)*r
-    : entry-(slPrice-entry)*r;
-
-  const bePrice=entry;
-
-  result.style.display='block';
-  result.innerHTML=`
-    <b>Сторона:</b> ${side.toUpperCase()}<br>
-    <b>Риск:</b> $${riskUsd.toFixed(2)} (0.8%)<br>
-
-    <div class="real-trade">Фактическая сумма: $${realTrade.toFixed(2)}</div>
-
-    <b>Цена SL:</b> ${slPrice.toFixed(2)}<br>
-
-    <div class="tp">TP1 → ${tpPrice(1).toFixed(2)} | +$${(riskUsd*1*tp1.value/100).toFixed(2)}</div>
-    <div class="tp">TP2 → ${tpPrice(2).toFixed(2)} | +$${(riskUsd*2*tp2.value/100).toFixed(2)}</div>
-    <div class="tp">TP3 → ${tpPrice(3).toFixed(2)} | +$${(riskUsd*3*tp3.value/100).toFixed(2)}</div>
-
-    <div class="be">Безубыток после TP1 → ${bePrice.toFixed(2)}</div>
-  `;
+longBtn.onclick=()=>{
+  side='long';
+  longBtn.classList.add('active');
+  shortBtn.classList.remove('active');
+}
+shortBtn.onclick=()=>{
+  side='short';
+  shortBtn.classList.add('active');
+  longBtn.classList.remove('active');
 }
 
-const depositInput=document.getElementById('deposit');
-const tradeInput=document.getElementById('trade');
-const leverageInput=document.getElementById('leverage');
-const entryInput=document.getElementById('entry');
-const result=document.getElementById('result');
+function calc(){
+  const dep = +deposit.value;
+  const riskPct = +riskPercent.value;
+  const tradeVal = +trade.value;
+  const lev = +leverage.value || 1;
+  const entryVal = +entry.value;
+
+  if(!dep || !tradeVal || !entryVal || !riskPct) return;
+
+  const riskUsd = dep * (riskPct / 100);
+  const realTrade = tradeVal / lev;
+  const slPct = (riskUsd / realTrade) * 100;
+
+  const sl = side === 'long'
+    ? entryVal * (1 - slPct / 100)
+    : entryVal * (1 + slPct / 100);
+
+  const slDeviation = side === 'long'
+    ? ((entryVal - sl) / entryVal) * 100
+    : ((sl - entryVal) / entryVal) * 100;
+
+  const tp = r => side === 'long'
+    ? entryVal + (entryVal - sl) * r
+    : entryVal - (sl - entryVal) * r;
+
+  result.style.display='block';
+  result.innerHTML = `
+    <b>Сторона:</b> ${side.toUpperCase()}<br>
+    <b>Риск:</b> $${riskUsd.toFixed(2)} (${riskPct}%)<br>
+
+    <div class="real">
+      Фактическая сумма: $${realTrade.toFixed(2)}
+    </div>
+
+    <b>SL:</b> ${sl.toFixed(2)}<br>
+    <b>SL отклонение:</b> ${slDeviation.toFixed(2)}% от Entry<br>
+
+    <div class="tp">TP1 → ${tp(1).toFixed(2)} | +$${riskUsd.toFixed(2)}</div>
+    <div class="tp">TP2 → ${tp(2).toFixed(2)} | +$${(riskUsd*2).toFixed(2)}</div>
+    <div class="tp">TP3 → ${tp(3).toFixed(2)} | +$${(riskUsd*3).toFixed(2)}</div>
+
+    <div class="be">
+      После TP1 → SL в BE (${entryVal.toFixed(2)})
+    </div>
+  `;
+}
 </script>
 
 </body>
