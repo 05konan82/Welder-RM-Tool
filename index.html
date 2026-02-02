@@ -51,7 +51,7 @@ h1{
 .switch{display:flex;gap:10px;margin-bottom:12px}
 .switch button{
   flex:1;padding:12px;border:none;border-radius:14px;
-  font-weight:800;color:#fff;opacity:.4;cursor:pointer
+  font-weight:800;color:#fff;opacity:.35;cursor:pointer
 }
 .long{background:var(--green)}
 .short{background:var(--red)}
@@ -140,25 +140,25 @@ input,select{
 </div>
 
 <script>
-let side="LONG";
-let tpCount=0;
+let position = "LONG"; // ← ВАЖНО: единая переменная
+let tpCount = 0;
 
-longBtn.onclick=()=>setSide("LONG");
-shortBtn.onclick=()=>setSide("SHORT");
+longBtn.onclick = () => setPosition("LONG");
+shortBtn.onclick = () => setPosition("SHORT");
 
-function setSide(s){
-  side=s;
-  longBtn.classList.toggle("active",s==="LONG");
-  shortBtn.classList.toggle("active",s==="SHORT");
+function setPosition(p){
+  position = p;
+  longBtn.classList.toggle("active", p === "LONG");
+  shortBtn.classList.toggle("active", p === "SHORT");
 }
 
 function addTP(){
-  if(tpCount>=4) return;
+  if(tpCount >= 4) return;
   tpCount++;
 
-  const div=document.createElement("div");
-  div.className="tp-block";
-  div.innerHTML=`
+  const div = document.createElement("div");
+  div.className = "tp-block";
+  div.innerHTML = `
     <b>TP ${tpCount}</b>
     <select class="tpType">
       <option value="percent">%</option>
@@ -170,50 +170,50 @@ function addTP(){
 }
 
 function calculate(){
-  const depositVal=+deposit.value;
-  const tradeVal=+trade.value;
-  const entryVal=+entry.value;
-  const riskPct=+risk.value;
-  const leverageVal=+leverage.value||1;
+  const depositVal = +deposit.value;
+  const tradeVal = +trade.value;
+  const entryVal = +entry.value;
+  const riskPct = +risk.value;
+  const leverageVal = +leverage.value || 1;
 
-  if(!depositVal||!tradeVal||!entryVal||!riskPct) return;
+  if(!depositVal || !tradeVal || !entryVal || !riskPct) return;
 
-  const riskUsd=depositVal*(riskPct/100);
-  const slPercent=(riskUsd/tradeVal)*100;
+  const riskUsd = depositVal * (riskPct / 100);
+  const slPercent = (riskUsd / tradeVal) * 100;
 
-  const slPrice=side==="LONG"
-    ? entryVal*(1-slPercent/100)
-    : entryVal*(1+slPercent/100);
+  const slPrice = position === "LONG"
+    ? entryVal * (1 - slPercent / 100)
+    : entryVal * (1 + slPercent / 100);
 
-  const realTrade=tradeVal/leverageVal;
+  const realTrade = tradeVal / leverageVal;
 
-  let tpHtml="";
-  document.querySelectorAll(".tp-block").forEach((tp,i)=>{
-    const type=tp.querySelector(".tpType").value;
-    const val=+tp.querySelector(".tpValue").value;
+  let tpHtml = "";
+  document.querySelectorAll(".tp-block").forEach((tp, i)=>{
+    const type = tp.querySelector(".tpType").value;
+    const val = +tp.querySelector(".tpValue").value;
     if(!val) return;
 
     let tpPrice;
-    if(type==="percent"){
-      tpPrice=side==="LONG"
-        ? entryVal*(1+val/100)
-        : entryVal*(1-val/100);
-    }else{
-      tpPrice=val;
+    if(type === "percent"){
+      tpPrice = position === "LONG"
+        ? entryVal * (1 + val / 100)
+        : entryVal * (1 - val / 100);
+    } else {
+      tpPrice = val;
     }
 
-    const profitPct=side==="LONG"
-      ? (tpPrice-entryVal)/entryVal*100
-      : (entryVal-tpPrice)/entryVal*100;
+    const profitPct = position === "LONG"
+      ? (tpPrice - entryVal) / entryVal * 100
+      : (entryVal - tpPrice) / entryVal * 100;
 
-    const profitUsd=tradeVal*(profitPct/100);
+    const profitUsd = tradeVal * (profitPct / 100);
 
-    tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profitUsd.toFixed(2)}<br>`;
+    tpHtml += `TP${i+1}: ${tpPrice.toFixed(2)} | +$${profitUsd.toFixed(2)}<br>`;
   });
 
-  result.style.display="block";
-  result.innerHTML=`
-    <b>${side}</b><br>
+  result.style.display = "block";
+  result.innerHTML = `
+    <b>${position}</b><br>
     Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
     Фактическая сумма: $${realTrade.toFixed(2)}<br>
     Стоп-лосс: ${slPercent.toFixed(2)}%<br>
