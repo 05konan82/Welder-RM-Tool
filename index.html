@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welder RM Tool</title>
 
 <style>
@@ -70,7 +70,10 @@ h1{
 
 .switch .long{background:var(--green)}
 .switch .short{background:var(--red)}
-.switch button.active{opacity:1;box-shadow:0 0 15px rgba(255,255,255,.2)}
+.switch button.active{
+  opacity:1;
+  box-shadow:0 0 15px rgba(255,255,255,.2)
+}
 
 label{
   font-size:13px;
@@ -113,7 +116,6 @@ button.calc{
   line-height:1.5;
 }
 
-.result b{font-weight:700}
 .green{color:var(--green)}
 .red{color:var(--red)}
 </style>
@@ -141,11 +143,8 @@ button.calc{
     <label>Цена входа</label>
     <input id="entry" type="number" value="100">
 
-    <label>Риск (%)</label>
+    <label>Риск (%) от депозита</label>
     <input id="riskPercent" type="number" step="0.1" value="0.8">
-
-    <label>Risk / Reward (RR)</label>
-    <input id="rr" type="number" step="0.1" value="3">
 
     <button class="calc" onclick="calculate()">Рассчитать</button>
 
@@ -161,55 +160,45 @@ document.getElementById("shortBtn").onclick = () => setSide("SHORT");
 
 function setSide(s){
   side = s;
-  document.getElementById("longBtn").classList.toggle("active", s==="LONG");
-  document.getElementById("shortBtn").classList.toggle("active", s==="SHORT");
+  longBtn.classList.toggle("active", s==="LONG");
+  shortBtn.classList.toggle("active", s==="SHORT");
 }
 
 function calculate(){
-  const deposit = +depositInput();
-  const trade = +tradeInput();
-  const leverage = +leverageInput();
-  const entry = +entryInput();
-  const riskPct = +riskInput();
-  const rr = +rrInput();
+  const deposit = +deposit.value;
+  const trade = +trade.value;
+  const leverage = +leverage.value;
+  const entry = +entry.value;
+  const riskPct = +riskPercent.value;
 
-  if(!deposit || !trade || !entry || !riskPct || !rr) return;
+  if(!deposit || !trade || !entry || !riskPct) return;
 
+  // риск в $
+  const riskUsd = deposit * (riskPct / 100);
+
+  // стоп % СТРОГО от суммы в сделку
+  const slPercent = (riskUsd / trade) * 100;
+
+  // фактическая сумма
   const realTrade = trade / leverage;
-  const riskUsd = deposit * (riskPct/100);
 
-  const slPercent = (riskUsd / realTrade) * 100;
-
-  let slPrice, tpPrice;
-  if(side==="LONG"){
-    slPrice = entry * (1 - slPercent/100);
-    tpPrice = entry * (1 + (slPercent*rr)/100);
+  let slPrice;
+  if(side === "LONG"){
+    slPrice = entry * (1 - slPercent / 100);
   }else{
-    slPrice = entry * (1 + slPercent/100);
-    tpPrice = entry * (1 - (slPercent*rr)/100);
+    slPrice = entry * (1 + slPercent / 100);
   }
 
-  const profitUsd = Math.abs(tpPrice - entry) * realTrade / entry * entry;
-
-  document.getElementById("result").style.display="block";
+  document.getElementById("result").style.display = "block";
   document.getElementById("result").innerHTML = `
     <b>${side}</b><br>
     Риск: <b>$${riskUsd.toFixed(2)}</b> (${riskPct}%)<br>
+    Сумма в сделку: <b>$${trade.toFixed(2)}</b><br>
     Фактическая сумма: <b>$${realTrade.toFixed(2)}</b><br>
     Стоп-лосс: <b>${slPercent.toFixed(2)}%</b><br>
-    Цена SL: <b>${slPrice.toFixed(2)}</b><br>
-    RR: <b>1:${rr}</b><br>
-    Цена TP: <b class="green">${tpPrice.toFixed(2)}</b><br>
-    Прибыль: <b class="green">$${profitUsd.toFixed(2)}</b>
+    Цена SL: <b class="red">${slPrice.toFixed(2)}</b>
   `;
 }
-
-function depositInput(){return document.getElementById("deposit").value}
-function tradeInput(){return document.getElementById("trade").value}
-function leverageInput(){return document.getElementById("leverage").value}
-function entryInput(){return document.getElementById("entry").value}
-function riskInput(){return document.getElementById("riskPercent").value}
-function rrInput(){return document.getElementById("rr").value}
 </script>
 
 </body>
