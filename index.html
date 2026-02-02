@@ -1,227 +1,222 @@
 <!DOCTYPE html>
-<div class="logo-container">
-  <img src="logo.jpg" alt="Welder RM Tool" class="logo-img">
-</div>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welder RM Tool</title>
+  <meta charset="UTF-8" />
+  <title>Welder RM Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-:root{
-  --bg:#070b12;
-  --card:#0f1625;
-  --input:#161e30;
-  --blue:#22d3ee;
-  --orange:#f59e0b;
-  --long:#00ff88;
-  --short:#ff2d2d;
-  --text:#e5e7eb;
-}
-*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-body{
-  margin:0;
-  background:radial-gradient(circle at top,#0b1220,#05070d 70%);
-  display:flex;justify-content:center;align-items:flex-start;
-  padding-top:20px;color:var(--text);
-}
-.wrapper{width:100%;max-width:440px;padding:0 16px;}
-.card{
-  background:linear-gradient(180deg,#0f172a,#0b1220);
-  border-radius:22px;padding:18px;
-  box-shadow:0 0 60px rgba(0,0,0,.7);
-}
-h1{
-  text-align:center;font-size:26px;font-weight:900;
-  margin:8px 0 14px;
-  background:linear-gradient(90deg,var(--blue),var(--orange));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.switch{display:flex;gap:12px;margin-bottom:14px}
-.switch button{
-  flex:1;padding:14px;border:none;border-radius:18px;
-  font-weight:900;font-size:16px;cursor:pointer;opacity:.3;
-  transition:.3s;
-  color:#000;
-}
-.switch .long{background:linear-gradient(135deg,#00ffb3,#00ff88);}
-.switch .short{background:linear-gradient(135deg,#ff6a6a,#ff2d2d);}
-.switch button.active{
-  opacity:1;
-  box-shadow:0 0 25px currentColor, inset 0 0 12px rgba(255,255,255,.5);
-  transform:scale(1.04);
-}
-label{display:block;font-size:13px;opacity:.85;margin-top:12px}
-input,select{
-  width:100%;margin-top:6px;padding:12px;
-  border-radius:14px;border:none;
-  background:var(--input);color:#fff;font-size:15px;
-}
-.calc{
-  width:100%;margin-top:18px;padding:15px;border:none;
-  border-radius:20px;font-size:16px;font-weight:900;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--blue),var(--orange));
-  color:#000;
-}
-.tp-controls{display:flex;gap:10px;margin-top:14px}
-.tp-controls button{
-  flex:1;padding:10px;
-  border-radius:14px;border:1px dashed #334155;
-  background:#0b1325;color:#9ca3af;cursor:pointer;
-}
-.tp-block{
-  margin-top:12px;padding:12px;
-  background:#050814;border-radius:14px;
-}
-.result{
-  margin-top:18px;background:#050814;
-  border-radius:14px;padding:14px;
-  font-size:14px;line-height:1.6;
-}
-.highlight{
-  color:#7dd3fc;font-weight:900;
-  text-shadow:0 0 14px rgba(56,189,248,.9);
-}
-</style>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: radial-gradient(circle at top, #0e1624, #05080f);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 30px 10px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(180deg, #0d1422, #080c15);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    }
+
+    /* ---------- LOGO ---------- */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-img {
+      max-width: 320px;
+      width: 100%;
+      animation: glow 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(0,170,255,.6));
+    }
+
+    @keyframes glow {
+      0% { filter: drop-shadow(0 0 15px rgba(0,170,255,.4)); }
+      50% { filter: drop-shadow(0 0 35px rgba(255,140,0,.9)); }
+      100% { filter: drop-shadow(0 0 15px rgba(0,170,255,.4)); }
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .side-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .side-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      opacity: .6;
+    }
+
+    .side-btn.long {
+      background: linear-gradient(90deg, #00ff9c, #00c176);
+    }
+
+    .side-btn.short {
+      background: linear-gradient(90deg, #ff5a5a, #c92626);
+    }
+
+    .side-btn.active {
+      opacity: 1;
+      box-shadow: 0 0 18px rgba(255,255,255,.25);
+    }
+
+    /* ---------- INPUTS ---------- */
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      font-size: 13px;
+      opacity: .7;
+    }
+
+    .field input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #141c2b;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    /* ---------- CALC BUTTON ---------- */
+    .calc-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(90deg, #00c6ff, #ff9f00);
+      color: #000;
+    }
+
+    /* ---------- RESULT ---------- */
+    .result {
+      margin-top: 18px;
+      background: #0c1424;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .highlight {
+      color: #00ff9c;
+      font-weight: 700;
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrapper">
+  <div class="app">
 
-<!-- ВСТРОЕННЫЙ ЛОГОТИП (SVG) -->
-<div style="text-align:center;margin-bottom:10px;">
-  <svg width="120" height="120" viewBox="0 0 512 512">
-    <circle cx="256" cy="256" r="240" fill="#0f172a"/>
-    <text x="50%" y="55%" fill="#22d3ee" font-size="120" font-family="Inter" text-anchor="middle" font-weight="900">W</text>
-  </svg>
-</div>
+    <!-- LOGO -->
+    <div class="logo-container">
+      <img src="logo.jpg" class="logo-img" alt="Welder RM Tool">
+    </div>
 
-<h1>Welder RM Tool</h1>
+    <!-- SIDE -->
+    <div class="side-buttons">
+      <button class="side-btn long active" onclick="setSide('LONG')">LONG</button>
+      <button class="side-btn short" onclick="setSide('SHORT')">SHORT</button>
+    </div>
 
-<div class="card">
+    <!-- INPUTS -->
+    <div class="field">
+      <label>Депозит ($)</label>
+      <input id="deposit" type="number" value="1000">
+    </div>
 
-<div class="switch">
-  <button id="longBtn" class="long active">LONG</button>
-  <button id="shortBtn" class="short">SHORT</button>
-</div>
+    <div class="field">
+      <label>Сумма в сделку ($)</label>
+      <input id="trade" type="number" value="500">
+    </div>
 
-<label>Депозит ($)</label>
-<input id="deposit" type="number" value="1000">
+    <div class="field">
+      <label>Плечо (x)</label>
+      <input id="leverage" type="number" value="1">
+    </div>
 
-<label>Сумма в сделку ($)</label>
-<input id="trade" type="number" value="500">
+    <div class="field">
+      <label>Цена входа</label>
+      <input id="entry" type="number" value="100">
+    </div>
 
-<label>Плечо (x)</label>
-<input id="leverage" type="number" value="1">
+    <div class="field">
+      <label>Риск (% от суммы в сделку)</label>
+      <input id="risk" type="number" value="0.8" step="0.1">
+    </div>
 
-<label>Цена входа</label>
-<input id="entry" type="number" value="100">
+    <button class="calc-btn" onclick="calculate()">Рассчитать</button>
 
-<label>Риск (%) от депозита</label>
-<input id="risk" type="number" step="0.1" value="0.8">
+    <!-- RESULT -->
+    <div class="result" id="result"></div>
+  </div>
 
-<div class="tp-controls">
-  <button onclick="addTP()">+ Добавить TP</button>
-  <button onclick="removeTP()">− Убрать TP</button>
-</div>
+  <script>
+    let side = 'LONG';
 
-<div id="tpContainer"></div>
+    function setSide(value) {
+      side = value;
+      document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(value === 'LONG' ? '.long' : '.short').classList.add('active');
+    }
 
-<button class="calc" onclick="calculate()">Рассчитать</button>
+    function calculate() {
+      const deposit = +depositInput.value;
+      const trade = +tradeInput.value;
+      const leverage = +leverageInput.value;
+      const entry = +entryInput.value;
+      const riskPercent = +riskInput.value;
 
-<div id="result" class="result" style="display:none"></div>
+      if (!deposit || !trade || !entry) return;
 
-</div>
-</div>
+      const riskUsd = trade * (riskPercent / 100);
+      const stopPercent = (riskUsd / trade) * 100;
+      const priceMove = entry * (stopPercent / 100);
+      const slPrice = side === 'LONG'
+        ? entry - priceMove
+        : entry + priceMove;
 
-<script>
-let position = "LONG";
-let tpCount = 0;
+      result.innerHTML = `
+        <b>${side}</b><br>
+        Риск: <span class="highlight">$${riskUsd.toFixed(2)}</span> (${riskPercent}%)<br>
+        Фактическая сумма: <span class="highlight">$${(trade / leverage).toFixed(2)}</span><br>
+        Стоп-лосс: ${stopPercent.toFixed(2)}%<br>
+        Цена SL: ${slPrice.toFixed(2)}
+      `;
 
-document.getElementById("longBtn").onclick = ()=>setSide("LONG");
-document.getElementById("shortBtn").onclick = ()=>setSide("SHORT");
+      result.style.display = 'block';
+    }
 
-function setSide(s){
-  position = s;
-  document.getElementById("longBtn").classList.toggle("active", s==="LONG");
-  document.getElementById("shortBtn").classList.toggle("active", s==="SHORT");
-}
-
-function addTP(){
-  if(tpCount>=4) return;
-  tpCount++;
-  const div = document.createElement("div");
-  div.className="tp-block";
-  div.innerHTML=`
-    <b>TP ${tpCount}</b>
-    <select class="tpType">
-      <option value="percent">%</option>
-      <option value="price">Цена</option>
-    </select>
-    <input class="tpValue" type="number" placeholder="Значение">
-  `;
-  document.getElementById("tpContainer").appendChild(div);
-}
-
-function removeTP(){
-  if(tpCount<=0) return;
-  const c = document.getElementById("tpContainer");
-  c.removeChild(c.lastElementChild);
-  tpCount--;
-}
-
-function calculate(){
-  const dep = +document.getElementById("deposit").value;
-  const trade = +document.getElementById("trade").value;
-  const lev = +document.getElementById("leverage").value || 1;
-  const entry = +document.getElementById("entry").value;
-  const riskPct = +document.getElementById("risk").value;
-
-  if(!dep||!trade||!entry||!riskPct) return;
-
-  const riskUsd = dep * (riskPct/100);
-  const slPct = (riskUsd / trade) * 100;
-
-  const slPrice = position==="LONG"
-    ? entry*(1-slPct/100)
-    : entry*(1+slPct/100);
-
-  const realTrade = trade / lev;
-
-  let tpHtml="";
-  document.querySelectorAll(".tp-block").forEach((tp,i)=>{
-    const type = tp.querySelector(".tpType").value;
-    const val = +tp.querySelector(".tpValue").value;
-    if(!val) return;
-
-    let tpPrice = type==="percent"
-      ? (position==="LONG"
-         ? entry*(1+val/100)
-         : entry*(1-val/100))
-      : val;
-
-    const profitPct = position==="LONG"
-      ? (tpPrice-entry)/entry*100
-      : (entry-tpPrice)/entry*100;
-
-    const profitUsd = trade * profitPct / 100;
-    tpHtml += `TP${i+1}: ${tpPrice.toFixed(2)} | +$${profitUsd.toFixed(2)}<br>`;
-  });
-
-  const resultElem=document.getElementById("result");
-  resultElem.style.display="block";
-  resultElem.innerHTML=`
-    <b>${position}</b><br>
-    Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
-    <span class="highlight">Фактическая сумма: $${realTrade.toFixed(2)}</span><br>
-    Стоп-лосс: ${slPct.toFixed(2)}%<br>
-    Цена SL: ${slPrice.toFixed(2)}<br>
-    ${tpHtml}
-  `;
-}
-</script>
-
+    const depositInput = document.getElementById('deposit');
+    const tradeInput = document.getElementById('trade');
+    const leverageInput = document.getElementById('leverage');
+    const entryInput = document.getElementById('entry');
+    const riskInput = document.getElementById('risk');
+    const result = document.getElementById('result');
+  </script>
 </body>
 </html>
