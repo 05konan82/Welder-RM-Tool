@@ -6,151 +6,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root{
-  --bg:#05070d;
-  --input:#1e293b;
-  --green:#00ff66;
-  --red:#ff2e2e;
-  --accent:#38bdf8;
-  --text:#e5e7eb;
-}
-
-*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0b1220,#05070d 70%);
+  background:#05070d;
+  font-family:Inter,system-ui,sans-serif;
+  color:#e5e7eb;
   display:flex;
   justify-content:center;
   padding:20px;
-  color:var(--text);
 }
-
 .app{
   width:100%;
   max-width:420px;
-  background:linear-gradient(180deg,#0f172a,#050814);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 0 40px rgba(0,0,0,.7);
+  background:#0b1220;
+  border-radius:18px;
+  padding:18px;
 }
+.logo{text-align:center;margin-bottom:10px}
+.logo img{max-width:260px;width:100%}
 
-.logo-box{text-align:center;margin-bottom:14px}
-.logo-box img{max-width:260px;width:100%}
-
-.side{display:flex;gap:12px;margin-bottom:14px}
+.side{display:flex;gap:10px}
 .side button{
   flex:1;
-  padding:16px;
-  border:none;
-  border-radius:16px;
-  font-size:17px;
+  padding:14px;
   font-weight:900;
+  font-size:16px;
+  border:none;
+  border-radius:14px;
   cursor:pointer;
-  color:#000;
-  transition:.2s;
+  opacity:.4;
 }
-.long{background:#00ff66}
-.short{background:#ff2e2e}
-.side button:not(.active){filter:brightness(.45)}
-.side .active{
-  filter:none;
-  box-shadow:0 0 25px rgba(255,255,255,.45);
-  transform:scale(1.05);
-}
+.side .active{opacity:1}
+.long{background:#00ff66;color:#000}
+.short{background:#ff2e2e;color:#000}
 
-label{display:block;margin-top:12px;font-size:13px;opacity:.85}
+label{font-size:13px;margin-top:10px;display:block}
 input,select{
   width:100%;
-  margin-top:6px;
-  padding:12px;
-  border-radius:14px;
+  padding:10px;
+  margin-top:4px;
+  border-radius:12px;
   border:none;
-  background:var(--input);
+  background:#1e293b;
   color:#fff;
-  font-size:15px;
 }
 
-.controls{display:flex;gap:10px;margin-top:14px}
+.controls{display:flex;gap:8px;margin-top:10px}
 .controls button{
   flex:1;
   padding:10px;
-  border-radius:14px;
+  border-radius:12px;
   border:1px dashed #334155;
-  background:#0b1325;
+  background:#020617;
   color:#9ca3af;
   cursor:pointer;
 }
 
-.tp{
-  margin-top:10px;
-  padding:12px;
-  background:#020617;
-  border-radius:14px;
-}
+.tp{background:#020617;padding:10px;border-radius:12px;margin-top:6px}
 
 .calc{
-  margin-top:18px;
+  margin-top:14px;
   width:100%;
-  padding:16px;
-  border:none;
-  border-radius:18px;
+  padding:14px;
   font-size:17px;
   font-weight:900;
-  cursor:pointer;
+  border:none;
+  border-radius:16px;
   background:linear-gradient(90deg,#22d3ee,#f59e0b);
   color:#000;
+  cursor:pointer;
 }
 
 .result{
-  margin-top:18px;
+  margin-top:14px;
   background:#020617;
   border-radius:14px;
-  padding:14px;
+  padding:12px;
   font-size:14px;
   line-height:1.6;
 }
-
-.fact{
-  color:var(--accent);
-  font-weight:900;
-  font-size:16px;
-}
+.fact{color:#38bdf8;font-weight:900}
 </style>
 </head>
 
 <body>
 <div class="app">
 
-<div class="logo-box">
+<div class="logo">
   <img src="logo.jpg" alt="Welder RM Tool">
 </div>
 
 <div class="side">
-  <button id="btnLong" class="long active">LONG</button>
-  <button id="btnShort" class="short">SHORT</button>
+  <button id="longBtn" class="long active">LONG</button>
+  <button id="shortBtn" class="short">SHORT</button>
 </div>
 
 <label>Депозит ($)</label>
-<input id="deposit" type="number" value="1000">
+<input id="iDeposit" type="number" value="1000">
 
 <label>Сумма в сделку ($)</label>
-<input id="trade" type="number" value="500">
+<input id="iTrade" type="number" value="500">
 
-<label>Плечо (x)</label>
-<input id="leverage" type="number" value="2" min="1">
+<label>Плечо</label>
+<input id="iLeverage" type="number" value="2" min="1">
 
 <label>Цена входа</label>
-<input id="entry" type="number" value="100">
+<input id="iEntry" type="number" value="100">
 
 <label>Риск (%) от депозита</label>
-<input id="risk" type="number" value="0.8" step="0.1">
+<input id="iRisk" type="number" value="0.8" step="0.1">
 
 <label>% усреднения от цены входа</label>
-<input id="avgPct" type="number" value="10">
+<input id="iAvgPct" type="number" value="10">
 
 <div class="controls">
-  <button id="avgBtn">Использовать усреднение</button>
+  <button id="avgToggle">Использовать усреднение</button>
 </div>
 
 <div class="controls">
@@ -171,17 +141,18 @@ let side="LONG";
 let useAvg=false;
 let tpCount=0;
 
-btnLong.onclick=()=>setSide("LONG");
-btnShort.onclick=()=>setSide("SHORT");
-avgBtn.onclick=()=>{
+longBtn.onclick=()=>setSide("LONG");
+shortBtn.onclick=()=>setSide("SHORT");
+
+avgToggle.onclick=()=>{
   useAvg=!useAvg;
-  avgBtn.style.color=useAvg?"#38bdf8":"#9ca3af";
+  avgToggle.style.color=useAvg?"#38bdf8":"#9ca3af";
 };
 
 function setSide(s){
   side=s;
-  btnLong.classList.toggle("active",s==="LONG");
-  btnShort.classList.toggle("active",s==="SHORT");
+  longBtn.classList.toggle("active",s==="LONG");
+  shortBtn.classList.toggle("active",s==="SHORT");
 }
 
 function addTP(){
@@ -207,60 +178,51 @@ function removeTP(){
 }
 
 function calculate(){
-  const deposit=+deposit.value;
-  const trade=+trade.value;
-  const entry=+entry.value;
-  const riskPct=+risk.value;
-  const lev=+leverage.value||1;
+  const deposit=+document.getElementById("iDeposit").value;
+  const trade=+document.getElementById("iTrade").value;
+  const entry=+document.getElementById("iEntry").value;
+  const riskPct=+document.getElementById("iRisk").value;
+  const lev=+document.getElementById("iLeverage").value||1;
 
-  const factMargin = trade / lev;
-  const riskUsd = deposit * (riskPct / 100);
-  const slPct = (riskUsd / trade) * 100;
+  const fact=trade/lev;
+  const riskUsd=deposit*(riskPct/100);
+  const slPct=(riskUsd/trade)*100;
 
   let avgPrice=entry;
   let avgHtml="";
 
   if(useAvg){
-    const pct=+avgPct.value;
-    const entry2 = side==="LONG"
-      ? entry*(1-pct/100)
-      : entry*(1+pct/100);
-
+    const p=+document.getElementById("iAvgPct").value;
+    const entry2=side==="LONG"?entry*(1-p/100):entry*(1+p/100);
     avgPrice=(entry+entry2)/2;
 
     avgHtml=`
       Усреднение:<br>
-      1 Вход: ${(factMargin/2).toFixed(2)}$ — Цена: ${entry.toFixed(2)}<br>
-      2 Вход: ${(factMargin/2).toFixed(2)}$ — Цена: ${entry2.toFixed(2)}<br>
+      1 Вход: ${(fact/2).toFixed(2)}$ — Цена: ${entry.toFixed(2)}<br>
+      2 Вход: ${(fact/2).toFixed(2)}$ — Цена: ${entry2.toFixed(2)}<br>
     `;
   }
 
-  const slPrice = side==="LONG"
+  const slPrice=side==="LONG"
     ? avgPrice*(1-slPct/100)
     : avgPrice*(1+slPct/100);
 
   let tpHtml="";
   document.querySelectorAll(".tp").forEach((tp,i)=>{
-    const type=tp.querySelector(".tpType").value;
-    const val=+tp.querySelector(".tpVal").value;
-    if(!val) return;
-
-    const tpPrice = type==="percent"
-      ? (side==="LONG"?avgPrice*(1+val/100):avgPrice*(1-val/100))
-      : val;
-
-    const pct = side==="LONG"
-      ? (tpPrice-avgPrice)/avgPrice*100
-      : (avgPrice-tpPrice)/avgPrice*100;
-
-    const profit = trade*(pct/100);
+    const t=tp.querySelector(".tpType").value;
+    const v=+tp.querySelector(".tpVal").value;
+    if(!v) return;
+    const tpPrice=t==="percent"
+      ? (side==="LONG"?avgPrice*(1+v/100):avgPrice*(1-v/100))
+      : v;
+    const profit=trade*((tpPrice-avgPrice)/avgPrice)*(side==="LONG"?1:-1);
     tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
   });
 
   result.style.display="block";
   result.innerHTML=`
     <b>${side}</b><br>
-    <span class="fact">Фактическая сумма: $${factMargin.toFixed(2)}</span><br>
+    <span class="fact">Фактическая сумма: $${fact.toFixed(2)}</span><br>
     ${avgHtml}
     Цена стоп-лосса: ${slPrice.toFixed(2)}<br>
     Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
