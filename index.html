@@ -138,7 +138,7 @@ input,select{
 <input id="trade" type="number" value="500">
 
 <label>Плечо (x)</label>
-<input id="leverage" type="number" value="1" min="1">
+<input id="leverage" type="number" value="2" min="1">
 
 <label>Цена входа</label>
 <input id="entry" type="number" value="100">
@@ -222,8 +222,10 @@ function calculate(){
   const riskPct=+riskEl.value;
   const lev=+leverageEl.value||1;
 
-  const riskUsd=deposit*(riskPct/100);
-  const slPct=(riskUsd/trade)*100;
+  const factMargin = trade / lev; // 🔥 КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
+
+  const riskUsd = deposit * (riskPct / 100);
+  const slPct = (riskUsd / trade) * 100;
 
   let avgPrice=entry;
   let avgHtml="";
@@ -238,16 +240,14 @@ function calculate(){
 
     avgHtml=`
       Усреднение:<br>
-      1 Вход: ${(trade/2).toFixed(2)}$<br>
-      2 Вход: ${(trade/2).toFixed(2)}$<br>
+      1 Вход: ${(factMargin/2).toFixed(2)}$<br>
+      2 Вход: ${(factMargin/2).toFixed(2)}$<br>
     `;
   }
 
   const slPrice=side==="LONG"
     ? avgPrice*(1-slPct/100)
     : avgPrice*(1+slPct/100);
-
-  const factMargin=trade/lev;
 
   let tpHtml="";
   document.querySelectorAll(".tp").forEach((tp,i)=>{
