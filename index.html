@@ -60,7 +60,7 @@ body{
 }
 
 label{display:block;margin-top:12px;font-size:13px;opacity:.85}
-input{
+input,select{
   width:100%;
   margin-top:6px;
   padding:12px;
@@ -80,6 +80,13 @@ input{
   background:#0b1325;
   color:#9ca3af;
   cursor:pointer;
+}
+
+.tp{
+  margin-top:10px;
+  padding:12px;
+  background:#020617;
+  border-radius:14px;
 }
 
 .calc{
@@ -146,93 +153,129 @@ input{
   <button id="avgBtn">Использовать усреднение</button>
 </div>
 
-<button class="calc" id="calcBtn">Рассчитать</button>
+<div class="controls">
+  <button onclick="addTP()">➕ Добавить TP</button>
+  <button onclick="removeTP()">➖ Убрать TP</button>
+</div>
+
+<div id="tpBox"></div>
+
+<button class="calc" onclick="calculate()">Рассчитать</button>
 
 <div id="result" class="result" style="display:none"></div>
 
 </div>
 
 <script>
-let side = "LONG";
-let useAvg = false;
+let side="LONG";
+let useAvg=false;
+let tpCount=0;
 
-// элементы
-const depositEl = document.getElementById("deposit");
-const tradeEl = document.getElementById("trade");
-const leverageEl = document.getElementById("leverage");
-const entryEl = document.getElementById("entry");
-const riskEl = document.getElementById("risk");
-const avgPctEl = document.getElementById("avgPct");
-const resultEl = document.getElementById("result");
+const depositEl=document.getElementById("deposit");
+const tradeEl=document.getElementById("trade");
+const leverageEl=document.getElementById("leverage");
+const entryEl=document.getElementById("entry");
+const riskEl=document.getElementById("risk");
+const avgPctEl=document.getElementById("avgPct");
+const resultEl=document.getElementById("result");
+const tpBox=document.getElementById("tpBox");
 
-const btnLong = document.getElementById("btnLong");
-const btnShort = document.getElementById("btnShort");
-const avgBtn = document.getElementById("avgBtn");
-const calcBtn = document.getElementById("calcBtn");
-
-btnLong.onclick = () => setSide("LONG");
-btnShort.onclick = () => setSide("SHORT");
-
-avgBtn.onclick = () => {
-  useAvg = !useAvg;
-  avgBtn.style.color = useAvg ? "#38bdf8" : "#9ca3af";
+btnLong.onclick=()=>setSide("LONG");
+btnShort.onclick=()=>setSide("SHORT");
+avgBtn.onclick=()=>{
+  useAvg=!useAvg;
+  avgBtn.style.color=useAvg?"#38bdf8":"#9ca3af";
 };
 
-calcBtn.onclick = calculate;
-
 function setSide(s){
-  side = s;
-  btnLong.classList.toggle("active", s === "LONG");
-  btnShort.classList.toggle("active", s === "SHORT");
+  side=s;
+  btnLong.classList.toggle("active",s==="LONG");
+  btnShort.classList.toggle("active",s==="SHORT");
+}
+
+function addTP(){
+  if(tpCount>=4) return;
+  tpCount++;
+  const d=document.createElement("div");
+  d.className="tp";
+  d.innerHTML=`
+    <b>TP ${tpCount}</b>
+    <select class="tpType">
+      <option value="percent">%</option>
+      <option value="price">Цена</option>
+    </select>
+    <input class="tpVal" type="number" placeholder="Значение">
+  `;
+  tpBox.appendChild(d);
+}
+
+function removeTP(){
+  if(tpCount<=0) return;
+  tpBox.lastElementChild.remove();
+  tpCount--;
 }
 
 function calculate(){
-  const deposit = +depositEl.value;
-  const trade = +tradeEl.value;
-  const entry = +entryEl.value;
-  const riskPct = +riskEl.value;
-  const lev = +leverageEl.value || 1;
+  const deposit=+depositEl.value;
+  const trade=+tradeEl.value;
+  const entry=+entryEl.value;
+  const riskPct=+riskEl.value;
+  const lev=+leverageEl.value||1;
 
-  if(!deposit || !trade || !entry){
-    alert("Заполни все поля");
-    return;
-  }
+  const riskUsd=deposit*(riskPct/100);
+  const slPct=(riskUsd/trade)*100;
 
-  const riskUsd = deposit * (riskPct / 100);
-  const slPct = (riskUsd / trade) * 100;
-
-  let avgPrice = entry;
-  let avgHtml = "";
+  let avgPrice=entry;
+  let avgHtml="";
 
   if(useAvg){
-    const avgP = +avgPctEl.value;
-    const entry2 = side === "LONG"
-      ? entry * (1 - avgP/100)
-      : entry * (1 + avgP/100);
+    const avgP=+avgPctEl.value;
+    const entry2=side==="LONG"
+      ? entry*(1-avgP/100)
+      : entry*(1+avgP/100);
 
-    avgPrice = (entry + entry2) / 2;
+    avgPrice=(entry+entry2)/2;
 
-    avgHtml = `
+    avgHtml=`
       Усреднение:<br>
       1 Вход: ${(trade/2).toFixed(2)}$<br>
       2 Вход: ${(trade/2).toFixed(2)}$<br>
     `;
   }
 
-  const slPrice = side === "LONG"
-    ? avgPrice * (1 - slPct/100)
-    : avgPrice * (1 + slPct/100);
+  const slPrice=side==="LONG"
+    ? avgPrice*(1-slPct/100)
+    : avgPrice*(1+slPct/100);
 
-  const factMargin = trade / lev;
+  const factMargin=trade/lev;
 
-  resultEl.style.display = "block";
-  resultEl.innerHTML = `
+  let tpHtml="";
+  document.querySelectorAll(".tp").forEach((tp,i)=>{
+    const type=tp.querySelector(".tpType").value;
+    const val=+tp.querySelector(".tpVal").value;
+    if(!val) return;
+
+    const tpPrice=type==="percent"
+      ? (side==="LONG"?avgPrice*(1+val/100):avgPrice*(1-val/100))
+      : val;
+
+    const pct=side==="LONG"
+      ? (tpPrice-avgPrice)/avgPrice*100
+      : (avgPrice-tpPrice)/avgPrice*100;
+
+    const profit=trade*(pct/100);
+    tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
+  });
+
+  resultEl.style.display="block";
+  resultEl.innerHTML=`
     <b>${side}</b><br>
     <span class="fact">Фактическая сумма: $${factMargin.toFixed(2)}</span><br>
     ${avgHtml}
     Риск: $${riskUsd.toFixed(2)}<br>
     Стоп-лосс: ${slPct.toFixed(2)}%<br>
-    Цена SL: ${slPrice.toFixed(2)}
+    Цена SL: ${slPrice.toFixed(2)}<br>
+    ${tpHtml}
   `;
 }
 </script>
