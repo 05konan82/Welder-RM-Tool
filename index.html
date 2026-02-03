@@ -86,6 +86,7 @@ input,select{
   line-height:1.6;
 }
 .fact{color:#38bdf8;font-weight:900}
+.avgPrice{color:#facc15;font-weight:900}
 </style>
 </head>
 
@@ -108,7 +109,7 @@ input,select{
 <input id="iTrade" type="number" value="500">
 
 <label>Плечо</label>
-<input id="iLeverage" type="number" value="2" min="1">
+<input id="iLeverage" type="number" value="1" min="1">
 
 <label>Цена входа</label>
 <input id="iEntry" type="number" value="100">
@@ -117,26 +118,35 @@ input,select{
 <input id="iRisk" type="number" value="0.8" step="0.1">
 
 <label>% усреднения от цены входа</label>
-<input id="iAvgPct" type="number" value="10">
+<input id="iAvgPct" type="number" value="5">
 
 <div class="controls">
   <button id="avgToggle">Использовать усреднение</button>
 </div>
 
 <div class="controls">
-  <button onclick="addTP()">➕ Добавить TP</button>
-  <button onclick="removeTP()">➖ Убрать TP</button>
+  <button id="addTpBtn">➕ Добавить TP</button>
+  <button id="removeTpBtn">➖ Убрать TP</button>
 </div>
 
 <div id="tpBox"></div>
 
-<button class="calc" onclick="calculate()">Рассчитать</button>
+<button class="calc" id="calcBtn">Рассчитать</button>
 
 <div id="result" class="result" style="display:none"></div>
 
 </div>
 
 <script>
+const longBtn=document.getElementById("longBtn");
+const shortBtn=document.getElementById("shortBtn");
+const avgToggle=document.getElementById("avgToggle");
+const tpBox=document.getElementById("tpBox");
+const result=document.getElementById("result");
+const calcBtn=document.getElementById("calcBtn");
+const addTpBtn=document.getElementById("addTpBtn");
+const removeTpBtn=document.getElementById("removeTpBtn");
+
 let side="LONG";
 let useAvg=false;
 let tpCount=0;
@@ -148,6 +158,10 @@ avgToggle.onclick=()=>{
   useAvg=!useAvg;
   avgToggle.style.color=useAvg?"#38bdf8":"#9ca3af";
 };
+
+addTpBtn.onclick=addTP;
+removeTpBtn.onclick=removeTP;
+calcBtn.onclick=calculate;
 
 function setSide(s){
   side=s;
@@ -178,11 +192,11 @@ function removeTP(){
 }
 
 function calculate(){
-  const deposit=+document.getElementById("iDeposit").value;
-  const trade=+document.getElementById("iTrade").value;
-  const entry=+document.getElementById("iEntry").value;
-  const riskPct=+document.getElementById("iRisk").value;
-  const lev=+document.getElementById("iLeverage").value||1;
+  const deposit=+iDeposit.value;
+  const trade=+iTrade.value;
+  const entry=+iEntry.value;
+  const riskPct=+iRisk.value;
+  const lev=+iLeverage.value||1;
 
   const fact=trade/lev;
   const riskUsd=deposit*(riskPct/100);
@@ -192,7 +206,7 @@ function calculate(){
   let avgHtml="";
 
   if(useAvg){
-    const p=+document.getElementById("iAvgPct").value;
+    const p=+iAvgPct.value;
     const entry2=side==="LONG"?entry*(1-p/100):entry*(1+p/100);
     avgPrice=(entry+entry2)/2;
 
@@ -200,6 +214,7 @@ function calculate(){
       Усреднение:<br>
       1 Вход: ${(fact/2).toFixed(2)}$ — Цена: ${entry.toFixed(2)}<br>
       2 Вход: ${(fact/2).toFixed(2)}$ — Цена: ${entry2.toFixed(2)}<br>
+      <span class="avgPrice">Средняя цена после усреднения: ${avgPrice.toFixed(2)}</span><br>
     `;
   }
 
@@ -212,9 +227,11 @@ function calculate(){
     const t=tp.querySelector(".tpType").value;
     const v=+tp.querySelector(".tpVal").value;
     if(!v) return;
+
     const tpPrice=t==="percent"
       ? (side==="LONG"?avgPrice*(1+v/100):avgPrice*(1-v/100))
       : v;
+
     const profit=trade*((tpPrice-avgPrice)/avgPrice)*(side==="LONG"?1:-1);
     tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
   });
@@ -225,6 +242,7 @@ function calculate(){
     <span class="fact">Фактическая сумма: $${fact.toFixed(2)}</span><br>
     ${avgHtml}
     Цена стоп-лосса: ${slPrice.toFixed(2)}<br>
+    Стоп-лосс: ${slPct.toFixed(2)} %<br>
     Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
     ${tpHtml}
   `;
