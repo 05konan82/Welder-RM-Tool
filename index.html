@@ -132,11 +132,14 @@ input,select{
 <label>Сумма в сделку ($)</label>
 <input id="trade" type="number" value="500">
 
+<label>Плечо (x)</label>
+<input id="leverage" type="number" value="1" min="1" step="1">
+
 <label>Цена входа</label>
 <input id="entry" type="number" value="100">
 
 <label>Риск (%) от депозита</label>
-<input id="risk" type="number" min="0.8" step="0.1" value="1">
+<input id="risk" type="number" min="0.8" step="0.1" value="0.8">
 
 <div class="tp-controls">
   <button onclick="addTP()">➕ Добавить TP</button>
@@ -190,20 +193,21 @@ function removeTP(){
 }
 
 function calculate(){
-  const deposit=Number(document.getElementById("deposit").value);
-  const trade=Number(document.getElementById("trade").value);
-  const entry=Number(document.getElementById("entry").value);
-  const risk=Number(document.getElementById("risk").value);
+  const deposit=Number(deposit.value);
+  const trade=Number(trade.value);
+  const lev=Number(leverage.value)||1;
+  const entry=Number(entry.value);
+  const risk=Number(risk.value);
 
   if(!deposit||!trade||!entry||risk<0.8){
     alert("Проверь введённые данные");
     return;
   }
 
-  // ✅ РИСК $ ОТ ДЕПОЗИТА
+  // Риск $ от депозита
   const riskUsd = deposit * (risk/100);
 
-  // ✅ SL % ОТ СУММЫ В СДЕЛКУ
+  // SL % от суммы в сделку
   const slPct = (riskUsd / trade) * 100;
 
   const slPrice = side==="LONG"
@@ -235,6 +239,7 @@ function calculate(){
     Риск: $${riskUsd.toFixed(2)} (от депозита)<br>
     Стоп-лосс: ${slPct.toFixed(2)}%<br>
     Цена SL: ${slPrice.toFixed(2)}<br>
+    Плечо: x${lev}<br>
     ${tpHtml}
   `;
 }
