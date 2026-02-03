@@ -171,15 +171,6 @@ let side="LONG";
 let useAvg=false;
 let tpCount=0;
 
-const depositEl=document.getElementById("deposit");
-const tradeEl=document.getElementById("trade");
-const leverageEl=document.getElementById("leverage");
-const entryEl=document.getElementById("entry");
-const riskEl=document.getElementById("risk");
-const avgPctEl=document.getElementById("avgPct");
-const resultEl=document.getElementById("result");
-const tpBox=document.getElementById("tpBox");
-
 btnLong.onclick=()=>setSide("LONG");
 btnShort.onclick=()=>setSide("SHORT");
 avgBtn.onclick=()=>{
@@ -216,14 +207,13 @@ function removeTP(){
 }
 
 function calculate(){
-  const deposit=+depositEl.value;
-  const trade=+tradeEl.value;
-  const entry=+entryEl.value;
-  const riskPct=+riskEl.value;
-  const lev=+leverageEl.value||1;
+  const deposit=+deposit.value;
+  const trade=+trade.value;
+  const entry=+entry.value;
+  const riskPct=+risk.value;
+  const lev=+leverage.value||1;
 
-  const factMargin = trade / lev; // 🔥 КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
-
+  const factMargin = trade / lev;
   const riskUsd = deposit * (riskPct / 100);
   const slPct = (riskUsd / trade) * 100;
 
@@ -231,21 +221,21 @@ function calculate(){
   let avgHtml="";
 
   if(useAvg){
-    const avgP=+avgPctEl.value;
-    const entry2=side==="LONG"
-      ? entry*(1-avgP/100)
-      : entry*(1+avgP/100);
+    const pct=+avgPct.value;
+    const entry2 = side==="LONG"
+      ? entry*(1-pct/100)
+      : entry*(1+pct/100);
 
     avgPrice=(entry+entry2)/2;
 
     avgHtml=`
       Усреднение:<br>
-      1 Вход: ${(factMargin/2).toFixed(2)}$<br>
-      2 Вход: ${(factMargin/2).toFixed(2)}$<br>
+      1 Вход: ${(factMargin/2).toFixed(2)}$ — Цена: ${entry.toFixed(2)}<br>
+      2 Вход: ${(factMargin/2).toFixed(2)}$ — Цена: ${entry2.toFixed(2)}<br>
     `;
   }
 
-  const slPrice=side==="LONG"
+  const slPrice = side==="LONG"
     ? avgPrice*(1-slPct/100)
     : avgPrice*(1+slPct/100);
 
@@ -255,26 +245,25 @@ function calculate(){
     const val=+tp.querySelector(".tpVal").value;
     if(!val) return;
 
-    const tpPrice=type==="percent"
+    const tpPrice = type==="percent"
       ? (side==="LONG"?avgPrice*(1+val/100):avgPrice*(1-val/100))
       : val;
 
-    const pct=side==="LONG"
+    const pct = side==="LONG"
       ? (tpPrice-avgPrice)/avgPrice*100
       : (avgPrice-tpPrice)/avgPrice*100;
 
-    const profit=trade*(pct/100);
+    const profit = trade*(pct/100);
     tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
   });
 
-  resultEl.style.display="block";
-  resultEl.innerHTML=`
+  result.style.display="block";
+  result.innerHTML=`
     <b>${side}</b><br>
     <span class="fact">Фактическая сумма: $${factMargin.toFixed(2)}</span><br>
     ${avgHtml}
-    Риск: $${riskUsd.toFixed(2)}<br>
-    Стоп-лосс: ${slPct.toFixed(2)}%<br>
-    Цена SL: ${slPrice.toFixed(2)}<br>
+    Цена стоп-лосса: ${slPrice.toFixed(2)}<br>
+    Риск: $${riskUsd.toFixed(2)} (${riskPct}%)<br>
     ${tpHtml}
   `;
 }
