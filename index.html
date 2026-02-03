@@ -8,11 +8,10 @@
 <style>
 :root{
   --bg:#05070d;
-  --card:#0f172a;
   --input:#1e293b;
   --green:#00ff66;
   --red:#ff2e2e;
-  --accent:#22d3ee;
+  --accent:#38bdf8;
   --text:#e5e7eb;
 }
 
@@ -39,7 +38,6 @@ body{
 .logo-box{text-align:center;margin-bottom:14px}
 .logo-box img{max-width:260px;width:100%}
 
-/* SIDE */
 .side{display:flex;gap:12px;margin-bottom:14px}
 .side button{
   flex:1;
@@ -57,11 +55,10 @@ body{
 .side button:not(.active){filter:brightness(.45)}
 .side .active{
   filter:none;
-  box-shadow:0 0 20px rgba(255,255,255,.35);
+  box-shadow:0 0 22px rgba(255,255,255,.4);
   transform:scale(1.04);
 }
 
-/* INPUTS */
 label{display:block;margin-top:12px;font-size:13px;opacity:.85}
 input,select{
   width:100%;
@@ -74,7 +71,6 @@ input,select{
   font-size:15px;
 }
 
-/* TP */
 .tp-controls{display:flex;gap:10px;margin-top:14px}
 .tp-controls button{
   flex:1;
@@ -85,9 +81,9 @@ input,select{
   color:#9ca3af;
   cursor:pointer;
 }
+
 .tp{margin-top:10px;padding:12px;background:#020617;border-radius:14px}
 
-/* CALC */
 .calc{
   margin-top:18px;
   width:100%;
@@ -101,14 +97,19 @@ input,select{
   color:#000;
 }
 
-/* RESULT */
 .result{
   margin-top:18px;
   background:#020617;
   border-radius:14px;
   padding:14px;
   font-size:14px;
-  line-height:1.6;
+  line-height:1.7;
+}
+
+.fact{
+  color:var(--accent);
+  font-weight:900;
+  font-size:16px;
 }
 </style>
 </head>
@@ -211,6 +212,8 @@ function calculate(){
     ? entry * (1 - slPct/100)
     : entry * (1 + slPct/100);
 
+  const factSum = trade * lev;
+
   let tpHtml="";
   document.querySelectorAll(".tp").forEach((tp,i)=>{
     const type=tp.querySelector(".tpType").value;
@@ -234,10 +237,10 @@ function calculate(){
   result.style.display="block";
   result.innerHTML=`
     <b>${side}</b><br>
+    <span class="fact">Фактическая сумма: $${factSum.toFixed(2)}</span><br><br>
     Риск: $${riskUsd.toFixed(2)} (от депозита)<br>
     Стоп-лосс: ${slPct.toFixed(2)}%<br>
     Цена SL: ${slPrice.toFixed(2)}<br>
-    Плечо: x${lev}<br>
     ${tpHtml}
   `;
 }
