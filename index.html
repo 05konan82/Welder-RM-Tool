@@ -5,6 +5,13 @@
 <title>Welder RM Tool</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+</script>
+
 <style>
 :root{
   --bg:#05070d;
@@ -55,8 +62,8 @@ body{
 .side button:not(.active){filter:brightness(.45)}
 .side .active{
   filter:none;
-  box-shadow:0 0 22px rgba(255,255,255,.4);
-  transform:scale(1.04);
+  box-shadow:0 0 25px rgba(255,255,255,.45);
+  transform:scale(1.05);
 }
 
 label{display:block;margin-top:12px;font-size:13px;opacity:.85}
@@ -69,6 +76,13 @@ input,select{
   background:var(--input);
   color:#fff;
   font-size:15px;
+}
+
+.checkbox{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
 }
 
 .tp-controls{display:flex;gap:10px;margin-top:14px}
@@ -141,6 +155,16 @@ input,select{
 <label>Риск (%) от депозита</label>
 <input id="risk" type="number" value="0.8" step="0.1">
 
+<div class="checkbox">
+  <input type="checkbox" id="useAvg">
+  <label for="useAvg">Использовать усреднение</label>
+</div>
+
+<div id="avgBox" style="display:none">
+  <label>% усреднения от цены входа</label>
+  <input id="avgPct" type="number" value="10">
+</div>
+
 <div class="tp-controls">
   <button onclick="addTP()">➕ Добавить TP</button>
   <button onclick="removeTP()">➖ Убрать TP</button>
@@ -160,9 +184,15 @@ let tpCount=0;
 
 const btnLong=document.getElementById("btnLong");
 const btnShort=document.getElementById("btnShort");
+const useAvg=document.getElementById("useAvg");
+const avgBox=document.getElementById("avgBox");
 
 btnLong.onclick=()=>setSide("LONG");
 btnShort.onclick=()=>setSide("SHORT");
+
+useAvg.onchange=()=>{
+  avgBox.style.display=useAvg.checked?"block":"none";
+};
 
 function setSide(s){
   side=s;
@@ -193,52 +223,68 @@ function removeTP(){
 }
 
 function calculate(){
-  const deposit = +document.getElementById("deposit").value;
-  const trade   = +document.getElementById("trade").value;
-  const entry   = +document.getElementById("entry").value;
-  const riskPct = +document.getElementById("risk").value;
-  const lev     = +document.getElementById("leverage").value || 1;
+  const deposit=+depositEl.value;
+  const trade=+tradeEl.value;
+  const entry=+entryEl.value;
+  const riskPct=+riskEl.value;
+  const lev=+leverageEl.value||1;
 
-  if(!deposit || !trade || !entry) return alert("Заполни все поля");
+  if(!deposit||!trade||!entry) return alert("Заполни все поля");
 
-  const riskUsd = deposit * (riskPct/100);
-  const slPct   = (riskUsd / trade) * 100;
+  const riskUsd=deposit*(riskPct/100);
+  const slPct=(riskUsd/trade)*100;
 
-  const slPrice = side==="LONG"
-    ? entry * (1 - slPct/100)
-    : entry * (1 + slPct/100);
+  let avgPrice=entry;
 
-  const factMargin = trade / lev;
+  if(useAvg.checked){
+    const avgP=+avgPct.value;
+    const entry2=side==="LONG"
+      ? entry*(1-avgP/100)
+      : entry*(1+avgP/100);
+    avgPrice=(entry+entry2)/2;
+  }
+
+  const slPrice=side==="LONG"
+    ? avgPrice*(1-slPct/100)
+    : avgPrice*(1+slPct/100);
+
+  const factMargin=trade/lev;
 
   let tpHtml="";
   document.querySelectorAll(".tp").forEach((tp,i)=>{
-    const type = tp.querySelector(".tpType").value;
-    const val  = +tp.querySelector(".tpVal").value;
+    const type=tp.querySelector(".tpType").value;
+    const val=+tp.querySelector(".tpVal").value;
     if(!val) return;
 
-    const tpPrice = type==="percent"
-      ? (side==="LONG"?entry*(1+val/100):entry*(1-val/100))
+    const tpPrice=type==="percent"
+      ? (side==="LONG"?avgPrice*(1+val/100):avgPrice*(1-val/100))
       : val;
 
-    const pct = side==="LONG"
-      ? (tpPrice-entry)/entry*100
-      : (entry-tpPrice)/entry*100;
+    const pct=side==="LONG"
+      ? (tpPrice-avgPrice)/avgPrice*100
+      : (avgPrice-tpPrice)/avgPrice*100;
 
-    const profit = trade * pct/100;
-
-    tpHtml += `TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
+    const profit=trade*(pct/100);
+    tpHtml+=`TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
   });
 
   result.style.display="block";
   result.innerHTML=`
     <b>${side}</b><br>
     <span class="fact">Фактическая сумма: $${factMargin.toFixed(2)}</span><br>
+    ${useAvg.checked?`Средняя цена: ${avgPrice.toFixed(2)}<br>`:""}
     Риск: $${riskUsd.toFixed(2)}<br>
     Стоп-лосс: ${slPct.toFixed(2)}%<br>
     Цена SL: ${slPrice.toFixed(2)}<br>
     ${tpHtml}
   `;
 }
+
+const depositEl=deposit;
+const tradeEl=trade;
+const entryEl=entry;
+const riskEl=risk;
+const leverageEl=leverage;
 </script>
 
 </body>
