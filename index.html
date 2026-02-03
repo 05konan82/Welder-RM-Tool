@@ -103,7 +103,7 @@ input,select{
   border-radius:14px;
   padding:14px;
   font-size:14px;
-  line-height:1.7;
+  line-height:1.6;
 }
 
 .fact{
@@ -188,36 +188,32 @@ function addTP(){
 
 function removeTP(){
   if(tpCount<=0) return;
-  const box=document.getElementById("tpBox");
-  box.removeChild(box.lastElementChild);
+  document.getElementById("tpBox").lastElementChild.remove();
   tpCount--;
 }
 
 function calculate(){
-  const deposit = Number(document.getElementById("deposit").value);
-  const trade   = Number(document.getElementById("trade").value);
-  const entry   = Number(document.getElementById("entry").value);
-  const riskPct = Number(document.getElementById("risk").value);
-  const lev     = Number(document.getElementById("leverage").value)||1;
+  const deposit = +document.getElementById("deposit").value;
+  const trade   = +document.getElementById("trade").value;
+  const entry   = +document.getElementById("entry").value;
+  const riskPct = +document.getElementById("risk").value;
+  const lev     = +document.getElementById("leverage").value || 1;
 
-  if(!deposit||!trade||!entry){
-    alert("Заполни все поля");
-    return;
-  }
+  if(!deposit || !trade || !entry) return alert("Заполни все поля");
 
   const riskUsd = deposit * (riskPct/100);
-  const slPct = (riskUsd / trade) * 100;
+  const slPct   = (riskUsd / trade) * 100;
 
   const slPrice = side==="LONG"
     ? entry * (1 - slPct/100)
     : entry * (1 + slPct/100);
 
-  const factSum = trade * lev;
+  const factMargin = trade / lev;
 
   let tpHtml="";
   document.querySelectorAll(".tp").forEach((tp,i)=>{
-    const type=tp.querySelector(".tpType").value;
-    const val=Number(tp.querySelector(".tpVal").value);
+    const type = tp.querySelector(".tpType").value;
+    const val  = +tp.querySelector(".tpVal").value;
     if(!val) return;
 
     const tpPrice = type==="percent"
@@ -233,12 +229,11 @@ function calculate(){
     tpHtml += `TP${i+1}: ${tpPrice.toFixed(2)} | +$${profit.toFixed(2)}<br>`;
   });
 
-  const result=document.getElementById("result");
   result.style.display="block";
   result.innerHTML=`
     <b>${side}</b><br>
-    <span class="fact">Фактическая сумма: $${factSum.toFixed(2)}</span><br><br>
-    Риск: $${riskUsd.toFixed(2)} (от депозита)<br>
+    <span class="fact">Фактическая сумма: $${factMargin.toFixed(2)}</span><br>
+    Риск: $${riskUsd.toFixed(2)}<br>
     Стоп-лосс: ${slPct.toFixed(2)}%<br>
     Цена SL: ${slPrice.toFixed(2)}<br>
     ${tpHtml}
